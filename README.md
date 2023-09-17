@@ -155,7 +155,7 @@ may be more suitable for less experienced players.
 Single-player games always have a robot.
 
 The installation comes with a number of 'editions' that emulate some
-commercially available games - SCRABBLE®, Super SCRABBLE®, Lexulous,
+commercially available games - SCRABBLE®, Super SCRABBLE®, Lexulous®,
 and Words With Friends® - all of which have very similar
 gameplay. And it's not too hard to create your own custom game, too.
 
