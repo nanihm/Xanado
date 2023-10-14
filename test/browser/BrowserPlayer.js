@@ -43,9 +43,9 @@ describe("browser/BrowserPlayer", () => {
     assert($act[0].isEqualNode($tr[0]),
            `expected: ${$tr.html()}\n actual: ${$act.html()}`);
     player.score = 666;
-    $("body").append("<div id='playerplayerkey'><div class='score'>fail</div></div>");
+    $("body").append("<div id='playerplayerkey'><div class='player-score'>fail</div></div>");
     player.$refreshScore();
-    assert.equal($("#playerplayerkey .score").text(), player.score);
+    assert.equal($("#playerplayerkey .player-score").text(), player.score);
   });
 
   it("$html-human", () => {
@@ -71,7 +71,7 @@ describe("browser/BrowserPlayer", () => {
     $tr.append(`<td class="player-name">You</td>`);
     $tr.append("<td class='remaining-tiles'></td>");
     $tr.append(`<td class='connect-state offline'>●</td>`);
-    $tr.append("<td class='score'>20</td>");
+    $tr.append("<td class='player-score'>20</td>");
     $tr.append("<td class='player-clock'></td>");
 
     // passing player will make it this player's turn
