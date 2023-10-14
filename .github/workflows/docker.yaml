@@ -1,12 +1,10 @@
 name: Docker build of master
 
-# Configure the "docker" workflow to run every time a change
-# is pushed to "main"
+# Run docker workflow whenever a new release is created
 
 on:
-  push:
-    branches:
-      - "main"
+  release:
+    types: [published]
 
 env:
   # Container registry domain (Github packages)
