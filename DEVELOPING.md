@@ -125,8 +125,9 @@ will build a local docker image
 ```
 $ docker run -p9093:9093 xanado
 ```
-will run the image, mapping `localhost` port 9093 to port 9093 on the
-docker image. The docker image is automatically built when a new version
+will run the image, mapping port 9093 on the docker image to port 9093 on the host. Note that docker requires the app to listen on all interfaces i.e. host `0.0.0.0`.
+
+The docker image is automatically built when a new version
 is checked in to github.
 
 ## npm
@@ -160,6 +161,8 @@ If you add a new theme, use `npm run indexing` to add it to the index files.
 ## Build system
 The build system uses [webpack](https://webpack.js.org/) to generate indexes and minimal browser scripts in the `dist` subdirectory. Run it using `npm run build` (or `npm run debug_build`). The `dist` code is built automatically
 when the code is pushed to github.
+
+When the server is run, it resolves the path to the client code using the optional `html_dir` configuration setting. This defaults to `dist`, so by default the webpacked client code is served to clients. `html_dir` can be overridden using the `--html`/`-h` options on the server invocation command line. Setting it to `html` will serve the unpacked client code instead (`npm run debug_server`).
 
 ## Documentation
 The code is documented using `jsdoc`. The documentation is automatically

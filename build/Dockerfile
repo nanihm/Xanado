@@ -22,4 +22,4 @@ COPY i18n i18n
 COPY images images
 COPY src src
 EXPOSE 9093
-CMD [ "npm", "run", "server" ]
+CMD [ "node", "bin/server.js" ]

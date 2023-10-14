@@ -242,6 +242,10 @@ HTTPS you require an SSL certificate. See
 https://linuxize.com/post/creating-a-self-signed-ssl-certificate/
 for instructions.
 
+Note that by default the server binds to `0.0.0.0:9093`. You can make it
+bind to a specific host and/or different port using the
+[configuration options](CONFIGURATION.md).
+
 # Development
 
 Further development is welcome, especially:
