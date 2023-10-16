@@ -83,11 +83,9 @@ const ClientUIMixin = superclass => class extends superclass {
   automaticPlay() {
     console.debug("Automaton playing");
 
-    // call swap 1 turn in 10
-    // call challenge 1 turn in 10
-    // pass 1 turn in turn
-    // autoplay the other 7
     const prob = Math.random();
+
+    // Try to swap, one turn in 10
     if (prob < 0.1) {
       const tiles = [];
       this.player.rack.forEachTiledSquare(
@@ -103,33 +101,26 @@ const ClientUIMixin = superclass => class extends superclass {
       }
     }
 
-    if (prob < 0.2) {
-      // See if there's a turn we can challenge
-      let challengeable = {};
-      challengeable[this.player.key] = false;
-      this.game.turns.forEach(t => {
-        challengeable[t.playerKey] = (t.type === Game.Turns.PLAYED);
-      });
-      challengeable = Object.keys(challengeable).filter(
-        p => p !== this.player.key && challengeable[p]);
-
-      if (challengeable.length > 0) {
-        challengeable = challengeable[
-          Math.floor(Math.random() * challengeable.length)];
+    // Try to challenge, if not swapped, 1 turn in 10
+    if (prob < 0.1 && this.game.turns.length > 0) {
+      // Can we challenge the last turn?
+      let challengeable = this.game.turns[this.game.turns.length - 1];
+      if (challengeable.type === Game.Turns.PLAYED) {
         this.sendCommand(Game.Command.CHALLENGE, {
-          challengedKey: challengeable
+          challengedKey: challengeable.playerKey
         });
         return;
         // otherwise drop through
       }
     }
 
-    if (prob >= 0.2 && prob < 0.3) {
+    // If not swapped and not challenged, try to pass 1 turn in 10
+    if (prob < 0.1) {
       this.sendCommand(Game.Command.PASS);
       return;
     }
 
-    // autoplay
+    // The rest of the time ask the server to autoplay our move
     this.notifyBackend(Game.Notify.MESSAGE, {
       sender: this.player.name,
       text: "autoplay"

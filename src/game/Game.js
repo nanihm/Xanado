@@ -130,7 +130,7 @@ class Game {
    * * TOOK_BACK - player took back their play
    * * PASSED - player passed
    * * TIMED_OUT - player was timed out (if timer type is `TURN`)
-   * @typedef {PLAY|SWAP|GAME_OVER|CHALLENGE_LOST|CHALLENGE_WON|TOOK_BACK|PASSED|TIMED_OUT} Game.Turns
+   * @typedef {PLAYED|SWAPPED|GAME_ENDED|CHALLENGE_LOST|CHALLENGE_WON|TOOK_BACK|PASSED|TIMED_OUT} Game.Turns
    */
   static Turns = {
     PLAYED:         "play",

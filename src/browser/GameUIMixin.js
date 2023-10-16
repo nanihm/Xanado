@@ -1791,7 +1791,8 @@ const GameUIMixin = superclass => class extends superclass {
    * @memberof browser/GameUIMixin
    * @instance
    * @param {Square} square the square with the tile being taken back
-   * @return {boolean} true if a tile was returned
+   * @return {boolean} true if a tile was returned, false if the square
+   * didn't contain a Tile, or the Tile on the square was locked on.
    * @private
    */
   takeBackTile(square) {
