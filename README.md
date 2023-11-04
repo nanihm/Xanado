@@ -212,13 +212,14 @@ The following editions are included:
 # Dictionaries
 The `/dictionaries` directory contains the
 dictionaries. Included with the installation are a number of pre-built dictionaries:
-- `CSW2019_English` - 280K words from the Collins Scrabble Words 2019 dictionary
-- `SOWPODS_English` - 409K words from an [unofficial version](https://www.wordgamedictionary.com/sowpods/download/sowpods.txt) of the standard European English SCRABBLE® competition dictionary.
-- `German` - 404k word list from the [germandict project on Sourceforge](https://sourceforge.net/projects/germandict/files/).
-- `British_English` - a custom 68k word British English dictionary, designed for casual players, to reflect the average vocabulary of a university-educated Briton. Note that many American spellings are also included, to reflect the flexible nature of our shared language.
-- `ODS8_French` - 411k word French SCRABBLE® competition dictionary.
-- `Oxford_5000` - 29K English words derived from the [Oxford Learner's Dictionary](https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000)
-- `DISC_Catalan` - 580k word Catalan.
+- `CSW2019_English` - 279496 words from the Collins Scrabble Words 2019 dictionary
+- `CSW2021_English` - 279077 word bowdlerized version of CS2019, now the official dictionary for tournament play in most places
+- `SOWPODS_English` - 267753 words from an [unofficial version](https://www.wordgamedictionary.com/sowpods/download/sowpods.txt) of the standard European English SCRABBLE® competition dictionary. Now replaced in most competitions by CSW2021.
+- `German` - 404014 word list from the [germandict project on Sourceforge](https://sourceforge.net/projects/germandict/files/).
+- `British_English` - a custom 67896 word British English dictionary, designed for casual players, to reflect the average vocabulary of a university-educated Briton. Note that many American spellings are also included, to reflect the flexible nature of our shared language.
+- `ODS8_French` - 411430 word French SCRABBLE® competition dictionary.
+- `Oxford_5000` - 29485 English words derived from the [Oxford Learner's Dictionary](https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000)
+- `DISC_Catalan` - 582236 Catalan words.
 
 See [DEVELOPING](DEVELOPING.md) for help on creating your own dictionary.
 
