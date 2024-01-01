@@ -14,20 +14,27 @@ describe("game/Player", () => {
       key: "key",
       isRobot: true,
       canChallenge: true,
-      missNextTurn: true,
       dictionary: "NoDic"
     };
     let player = new Player(p, Game.CLASSES);
-    for (const f in p)
-      assert.equal(player[f], p[f], f);
+
+    // Check fields defaulted from spec
+    assert.equal(player.name, p.name);
+    assert.equal(player.key, p.key);
+    assert.equal(player.isRobot, p.isRobot);
+    assert.equal(player.dictionary, p.dictionary);
+
     // Check fields that must be zeroed
     p.score = 999;
     p.passes = 999;
     p.clock = 999;
+    p.missNextTurn = true;
+
     player = new Player(p, Game.CLASSES);
     assert.equal(player.score, 0);
     assert.equal(player.passes, 0);
     assert.equal(player.clock, 0);
+    assert.isFalse(player.missNextTurn);
   });
 
   it("valueOf, toString, and serialisable", () => {

@@ -62,6 +62,13 @@ class Player {
      */
     this.score = 0;
 
+    /**
+     * True if this player is due to miss their next play due
+     * to a failed challenge. Default is false.
+     * @member {boolean}
+     */
+    this.missNextTurn = false;
+
     if (spec.clock)
       /**
        * Player countdown clock. In games with `timerType` `TIMER_TURN`,
@@ -80,14 +87,6 @@ class Player {
        * @member {boolean?}
        */
       this._isConnected = true;
-
-    if (spec.missNextTurn)
-      /**
-       * True if this player is due to miss their next play due
-       * to a failed challenge. Default is false.
-       * @member {boolean?}
-       */
-      this.missNextTurn = true;
 
     if (spec.wantsAdvice)
       /**
