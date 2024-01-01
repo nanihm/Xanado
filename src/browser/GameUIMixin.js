@@ -1255,14 +1255,20 @@ const GameUIMixin = superclass => class extends superclass {
         // Selecting a different square
       }
       else {
-        // The selected square has a tile on it. Is the square
-        // being selected empty?
+        // The selected square has a tile on it.
+        if (square) {
+          if (square.isEmpty()) {
+            // Square being moved to is empty, so this is a move
+            this.moveTile(this.selectedSquare, square);
+            this.selectSquare();
+            return;
 
-        if (square && square.isEmpty()) {
-          // It's empty, so this is a move
-          this.moveTile(this.selectedSquare, square);
-          this.selectSquare();
-          return;
+          } else if (!square.isBoard
+                     && square.surface === this.selectedSquare.surface) {
+            // Both squares are on the same rack and both have tiles,
+            // swap the tiles
+            console.debug("FUCK WANK");
+          }
         }
 
         if (isLocked)
@@ -1344,10 +1350,20 @@ const GameUIMixin = superclass => class extends superclass {
    */
   dropTile(fromSquare, toSquare) {
     if (fromSquare.tile) {
-      this.selectSquare();
+      this.selectSquare(); // clear selection
+      let float;
+      if (toSquare.tile && !(fromSquare.isBoard || toSquare.isBoard))
+        // If toSquare.tile, and they are both in the same rack,
+        // we want to swap the tiles. First ste is to float off the
+        // tile on the toSquare
+        float = toSquare.unplaceTile();
       this.moveTile(fromSquare, toSquare);
+      if (float)
+        // Replace the tile floated off the toSquare on the fromSquare
+        fromSquare.placeTile(float);
       if (this.getSetting("tile_click"))
         this.playAudio("tiledown");
+
     }
   }
 

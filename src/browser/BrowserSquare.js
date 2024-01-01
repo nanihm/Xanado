@@ -47,7 +47,19 @@ class BrowserSquare extends Square {
     .addClass(`square-${this.type}`)
     .attr("id", this.squid)
     .on("click",
-        () => Platform.trigger(UIEvents.SELECT_SQUARE, [ this ]));
+        () => Platform.trigger(UIEvents.SELECT_SQUARE, [ this ]))
+    .droppable({
+      hoverClass: "drop-active",
+      /* c8 ignore start */
+      drop: (event, jui) => {
+        // jui.draggable is a $tile, which has had data("Square")
+        // set in Tile.$ui
+        const from = $(jui.draggable).data("Square");
+        // Tell the main UI about it
+        Platform.trigger(UIEvents.DROP_TILE, [ from, this ]);
+      }
+      /* c8 ignore stop */
+    });
 
     if (typeof this.underlay !== "undefined") {
       // Simple underlay character i.e. SWAP
@@ -88,10 +100,6 @@ class BrowserSquare extends Square {
 
     assert(this.tile, "No tile");
 
-    // Can't drop on a tiled square
-    if ($td.hasClass("ui-droppable"))
-      $td.droppable("destroy");
-
     const $tile = this.tile.$ui(this);
     $td.append($tile);
   }
@@ -107,7 +115,6 @@ class BrowserSquare extends Square {
    * UI. By the time this is called, the tile has already been
    * removed from the model of the square, we just need to detach
    * the UI.
-   * @param {Tile?} tile the tile being unplaced.
    * @param {jQuery?} $td jquery object for the TD of the square. If
    * undefined, the TD will be found from the ID.
    */
@@ -124,22 +131,6 @@ class BrowserSquare extends Square {
 
     // Remove the tile UI from the square (without deleting it)
     $td.find(".Tile").detach();
-
-    // Reinstate the droppable target, which was removed
-    // in $placeTile (or is not yet added)
-    assert(!$td.hasClass("ui-droppable"), "Already droppable");
-    $td.droppable({
-      hoverClass: "drop-active",
-      /* c8 ignore start */
-      drop: (event, jui) => {
-        // jui.draggable is a $tile, which has had data("Square")
-        // set in Tile.$ui
-        const from = $(jui.draggable).data("Square");
-        // Tell the main UI about it
-        Platform.trigger(UIEvents.DROP_TILE, [ from, this ]);
-      }
-      /* c8 ignore stop */
-    });
   }
 
   /**

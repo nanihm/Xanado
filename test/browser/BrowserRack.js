@@ -77,7 +77,7 @@ describe("browser/BrowserRack", () => {
     let $dexp = $("<div></div>");
     $("body").append($dexp);
 
-    let $exp = $('<table><tbody><tr><td class="square-_" id="base_0"><div class="Tile ui-draggable ui-draggable-handle unlocked-tile"><div class="glyph"><span class="letter">S</span><span class="score">0</span></div></div></td><td class="square-_" id="base_1"><div class="Tile ui-draggable ui-draggable-handle unlocked-tile"><div class="glyph"><span class="letter">Q</span><span class="score">0</span></div></div></td></tr></tbody></table>');
+    let $exp = $('<table><tbody><tr><td class="square-_ ui-droppable" id="base_0"><div class="Tile ui-draggable ui-draggable-handle unlocked-tile"><div class="glyph"><span class="letter">S</span><span class="score">0</span></div></div></td><td class="square-_ ui-droppable" id="base_1"><div class="Tile ui-draggable ui-draggable-handle unlocked-tile"><div class="glyph"><span class="letter">Q</span><span class="score">0</span></div></div></td></tr></tbody></table>');
     $dexp.append($exp);
 
     assert($dact[0].isEqualNode($dexp[0]),

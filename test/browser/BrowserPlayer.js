@@ -34,7 +34,7 @@ describe("browser/BrowserPlayer", () => {
     $tr.append(`<td class="player-name miss-turn">${p.name}</td>`);
     $tr.append("<td class='remaining-tiles'></td>");
     $tr.append(`<td class="connect-state online">●</td>`);
-    $tr.append("<td class='score'>0</td>");
+    $tr.append("<td class='player-score'>0</td>");
     $tr.append("<td class='player-clock'></td>");
 
     player.online(false);

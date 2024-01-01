@@ -44,6 +44,8 @@ class UI {
    * @return {jQuery} the dialog
    */
   alert(args, title, log) {
+    // Alert used for user feedback if something goes wrong, debugger
+    // is to make it easier to get a stack trace
     debugger;
     // The log parameter is used for unit tests
     log = (log || console.error);
