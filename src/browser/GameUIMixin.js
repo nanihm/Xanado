@@ -1349,22 +1349,30 @@ const GameUIMixin = superclass => class extends superclass {
    * @private
    */
   dropTile(fromSquare, toSquare) {
-    if (fromSquare.tile) {
-      this.selectSquare(); // clear selection
-      let float;
-      if (toSquare.tile && !(fromSquare.isBoard || toSquare.isBoard))
-        // If toSquare.tile, and they are both in the same rack,
-        // we want to swap the tiles. First ste is to float off the
-        // tile on the toSquare
-        float = toSquare.unplaceTile();
-      this.moveTile(fromSquare, toSquare);
-      if (float)
-        // Replace the tile floated off the toSquare on the fromSquare
-        fromSquare.placeTile(float);
-      if (this.getSetting("tile_click"))
-        this.playAudio("tiledown");
+    if (!fromSquare.tile)
+      return;
+    this.selectSquare(); // clear selection
+    let float;
+    if (toSquare.tile) {
+      // The target square is occupied
+      if (toSquare.isBoard || fromSquare.isBoard) {
+        // Can't drop a tile onto a placed tile on the board, or
+        // from the board to a placed tile on a rack
+        this.playAudio("nogo");
+        return;
+      }
 
+      // They are both in a rack (any rack), so we want to swap the tiles.
+      // First float off the tile on the toSquare.
+      float = toSquare.unplaceTile();
     }
+    this.moveTile(fromSquare, toSquare);
+    if (float) {
+      // Replace the tile floated off the toSquare on the fromSquare
+      fromSquare.placeTile(float);
+      this.playAudio("tileswap");
+    } else if (this.getSetting("tile_click"))
+      this.playAudio("tiledown");
   }
 
   /**
