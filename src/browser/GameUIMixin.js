@@ -1358,7 +1358,8 @@ const GameUIMixin = superclass => class extends superclass {
       if (toSquare.isBoard || fromSquare.isBoard) {
         // Can't drop a tile onto a placed tile on the board, or
         // from the board to a placed tile on a rack
-        this.playAudio("nogo");
+        if (this.getSetting("tile_click"))
+          this.playAudio("nogo");
         return;
       }
 

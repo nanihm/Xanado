@@ -5,6 +5,8 @@
 Play a variety of SCRABBLE®-like games against the computer, or host
 your own web server to play games against friends and family.
 
+You can try it [here](https://cdot.github.io/Xanado/dist/standalone_games.html)!
+
 Includes tile sets for many languages, and dictionaries in English,
 French, German, and Catalan, and it's easy to add more.
 <p style="text-align:center;">
@@ -263,7 +265,7 @@ See [DEVELOPING](DEVELOPING.md) for more.
 - [Lexulous](http://lexulous.com) is a registered trademark of RJ Softwares, 8th Floor, Lansdowne Court, 5B Sarat Bose Road, Kolkata, India 700020
 
 This not-for-profit project is not associated with any of the owners
-of the aforementioned brands.
+of the aforementioned trademarks.
 
 ## Privacy
 
@@ -272,15 +274,15 @@ Xanado is hosted on your own server and doesn't store any information about you 
 ## CODE COPYRIGHT AND LICENSE
 
 The current code was written by Crawford Currie and is
-Copyright &copy; 2021-2023 Xanado Project. However it is
-built on the work of many people. All these individuals
+Copyright &copy; 2021-2024 Xanado Project. However it is
+built on the work of [many people](CONTRIBUTORS.md). All these individuals
 are acknowledged as sharing the copyright to parts of the work.
 
 The code is licensed under the terms of the
 [MIT license](https://en.wikipedia.org/wiki/MIT_License)
 as the most restrictive of the licenses of the contributory works.
 
-## Contributors
+## CONTRIBUTORS
 Xanado builds on previous work by many people, most notably Hans
 Hübner, Daniel Weck, Elijah Sawyers, Andrew Appel, Guy Jacobsen, and
 Joshua Lewis, and the many people who they in turn based their work
@@ -297,3 +299,5 @@ Direct contributors to Xanado are (in alphabetical order)
 - Joan Montané
 - Paul Kolano
 - Warren Bank
+
+All sounds were downloaded from [freesound.org](audio/ACKNOWLEDGEMENTS.md).
