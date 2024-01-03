@@ -1349,6 +1349,8 @@ const GameUIMixin = superclass => class extends superclass {
    * @private
    */
   dropTile(fromSquare, toSquare) {
+    if (toSquare === fromSquare)
+      return;
     if (!fromSquare.tile)
       return;
     this.selectSquare(); // clear selection
