@@ -1,14 +1,12 @@
 # XANADO
 
-## Multiplayer word grid game Server and Web Interface
+## Word grid game
 
 Play a variety of SCRABBLE®-like games against the computer, or host
 your own web server to play games against friends and family.
 
 You can try it [here](https://cdot.github.io/Xanado/dist/standalone_games.html)!
 
-Includes tile sets for many languages, and dictionaries in English,
-French, German, and Catalan, and it's easy to add more.
 <p style="text-align:center;">
 <img src="/images/splash.png" width="265" height="300" alt="Board" />
 </p>
@@ -17,6 +15,7 @@ French, German, and Catalan, and it's easy to add more.
 * You can play against a computer player, and/or other people.
 * Play against the clock if you want to.
 * Supports different board layouts and tile sets, and makes it easy to define your own.
+- Includes tile sets for many languages, and dictionaries in English, French, German, and Catalan, and it's easy to add more.
 * Has several different dictionaries in a number of languages, and it's easy to add your own.
 * Supports logins, which helps you to set up tournaments and record long-term player performance (server version only).
 * Players can use the dictionary to explore alternative moves (i.e. cheat).
@@ -59,13 +58,13 @@ browsers tested so far. Oldest tested versions are:
 If you want to play the single-player version against the computer, then all
 you have to do is to visit a server where it has been installed.
 Nothing is saved back to the server. Games are saved in the `localStorage`
-area in your browser which has a limited size, so don't get too carried away.
+area in your browser which has a limited size, so don't get too carried away!
 
 You can try it [here](https://cdot.github.io/Xanado/dist/standalone_games.html).
 
 ## Multi-player (client-server)
 
-### Docker
+### [Docker](https://www.docker.com)
 The simplest way to install the server is to use the latest Docker
 image, which you can find on [github](https://github.com/cdot/Xanado/pkgs/container/xanado).
 The Docker image takes care of all dependencies for you. Download the image and:
@@ -82,15 +81,6 @@ $ npm install --global @cdot/xanado
 ```
 
 ### Developers
-```
-git clone https://github.com/cdot/Xanado.git
-cd Xanado
-npm install
-npm run build
-```
-This clones the repository locally, then installs the dependencies.
-Finally it builds the client code.
-
 There is developer documentation [here](DEVELOPING.md).
 
 ### Configuring the server
@@ -265,7 +255,11 @@ See [DEVELOPING](DEVELOPING.md) for more.
 - [Lexulous](http://lexulous.com) is a registered trademark of RJ Softwares, 8th Floor, Lansdowne Court, 5B Sarat Bose Road, Kolkata, India 700020
 
 This not-for-profit project is not associated with any of the owners
-of the aforementioned trademarks.
+of the aforementioned trade marks.
+
+The name "XANADO" is also used by a number of other businesses /
+individuals. This not-for-profit project is not associated with any of
+these businesses.
 
 ## Privacy
 
@@ -275,7 +269,7 @@ Xanado is hosted on your own server and doesn't store any information about you 
 
 The current code was written by Crawford Currie and is
 Copyright &copy; 2021-2024 Xanado Project. However it is
-built on the work of [many people](CONTRIBUTORS.md). All these individuals
+built on the work of [many people](#CONTRIBUTORS). All these individuals
 are acknowledged as sharing the copyright to parts of the work.
 
 The code is licensed under the terms of the
@@ -288,8 +282,9 @@ Hübner, Daniel Weck, Elijah Sawyers, Andrew Appel, Guy Jacobsen, and
 Joshua Lewis, and the many people who they in turn based their work
 on.
 
-A large number of [npm](https://www.npmjs.com/) modules are used, for
-which their authors are acknowledged and thanked.
+A large number of [npm](https://www.npmjs.com/) modules are used,
+directly or indirectly, for which their authors are acknowledged and
+thanked.
 
 This project is tested with [BrowserStack](https://www.browserstack.com/)
 

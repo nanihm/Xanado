@@ -1,3 +1,16 @@
+## Getting started
+You will need installations of `git` and a recent version of `node.js` to
+support development.
+
+```
+git clone https://github.com/cdot/Xanado.git
+cd Xanado
+npm install
+npm run build
+```
+This clones the repository locally, then installs the dependencies.
+Finally it builds the client code.
+
 ## File structure
 
 Two versions are built, a client-server version supporting multiple
