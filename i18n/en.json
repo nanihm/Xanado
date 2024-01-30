@@ -156,7 +156,7 @@
   "log-turn": "turn",
   "log-two-passes": "All players passed twice",
   "log-winner": "$1 {{PLURAL:$2|has|have}} won",
-  "log-word-added": "$1 has added '$2' to $3",
+  "log-word-added": "$1 added '$2' to $3",
   "long-D": "DOUBLE WORD SCORE",
   "long-M": "★",
   "long-Q": "QUAD WORD SCORE",
