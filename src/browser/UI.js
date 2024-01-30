@@ -251,6 +251,7 @@ class UI {
       $("button").button();
       $("[data-i18n-tooltip]")
       .tooltip({
+        items: "[data-i18n-tooltip]",
         content: function() {
           return $.i18n($(this).data("i18n-tooltip"));
         },
