@@ -71,7 +71,7 @@ const ClientUIMixin = superclass => class extends superclass {
    * @memberof CientUIMixin
    * @override
    */
-  promiseCSS() {
+  promiseLayouts() {
     return $.get("/css");
   }
 

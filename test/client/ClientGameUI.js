@@ -18,7 +18,7 @@ describe("client/ClientGameUI", () => {
   };
 
   const USER_DEFAULTS = {
-    theme: "default",
+    layout: "default",
     jqTheme: "invader"
   };
 
@@ -26,7 +26,7 @@ describe("client/ClientGameUI", () => {
     name: "Descartes",
     settings: {
       "language": "en",
-      "xanadoCSS": "default",
+      "layout": "default",
       "jqTheme": "vader",
       "turn_alert": false,
       "cheers": false,
@@ -44,7 +44,7 @@ describe("client/ClientGameUI", () => {
     defaults: {
       edition: "Test",
       dictionary: "Oxford_5000",
-      theme: "default"
+      layout: "default"
     },
     games: "delayed"
   };

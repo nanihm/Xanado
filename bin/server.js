@@ -40,7 +40,7 @@ const DEFAULT_CONFIG = {
   // Defaults passed to the UI without processing by the server
   user_defaults: {
     notification: false, // notification requires https
-    theme: "default",
+    layout: "default",
     jqTheme: "pepper-grinder",
     warnings: true,
     cheers: true,

@@ -39,7 +39,7 @@ describe("server/UserManager", () => {
       timePenalty: 0
     },
     user_defaults: {
-      theme: "default"
+      layout: "default"
     },
     html_dir: "html"
   };

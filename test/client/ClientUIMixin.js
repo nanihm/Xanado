@@ -15,7 +15,7 @@ describe("client/ClientUIMixin", () => {
     name: "Descartes",
     settings: {
       "language": "en",
-      "xanadoCSS": "default",
+      "layout": "default",
       "jqTheme": "vader",
       "turn_alert": false,
       "cheers": false,
@@ -67,7 +67,7 @@ describe("client/ClientUIMixin", () => {
     };
     const USER_DEFAULTS = {
       notification: false,
-      theme: "none",
+      layout: "none",
       jqTheme: "grass"
     };
     const server = new StubServer({
@@ -114,7 +114,7 @@ describe("client/ClientUIMixin", () => {
       ui.promiseDefaults("user")
       .then(s => assert.deepEqual(s, USER_DEFAULTS)),
 
-      ui.promiseCSS()
+      ui.promiseLayouts()
       .then(e => assert(Array.isArray(e))),
 
       ui.promiseLocales()

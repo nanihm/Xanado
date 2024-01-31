@@ -24,7 +24,8 @@ const DEFAULT_USER_SETTINGS = {
   // User settings
   one_window: true,
 	notification: false, // requires https
-	theme: "default",
+	layout: "default",
+  language: "en",
   jqTheme: "pepper-grinder",
 	warnings: true,
 	cheers: true,
@@ -120,9 +121,11 @@ const StandaloneUIMixin = superclass => class extends superclass {
     if (session === null) {
       // null means key does not exist
       // see https://developer.mozilla.org/en-US/docs/Web/API/Storage/getItem
-      if (typeof Game.DEFAULTS[key] === "undefined")
+      if (typeof Game.DEFAULTS[key] === "undefined") {
+        if (key === "language")
+          return $.i18n.locale() || DEFAULT_USER_SETTINGS.language;
         return DEFAULT_USER_SETTINGS[key];
-      else
+      } else
         return Game.DEFAULTS[key];
     } else
       return session;
@@ -142,12 +145,12 @@ const StandaloneUIMixin = superclass => class extends superclass {
   }
 
   /**
-   * @implements UI#promiseCSS
+   * @implements UI#promiseLayouts
    * @memberof standalone/StandaloneUIMixin
    * @instance
    * @override
    */
-  promiseCSS() {
+  promiseLayouts() {
     return Platform.readFile(Platform.getFilePath("css/index.json"));
   }
 

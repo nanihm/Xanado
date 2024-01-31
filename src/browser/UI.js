@@ -159,12 +159,14 @@ class UI {
     // Initialise jquery theme
     const jqTheme = this.getSetting("jqTheme");
     if (jqTheme)
+      // Replace the link for the jQuery theme
       $("#jQueryTheme").each(function() {
         this.href = this.href.replace(/\/themes\/[^/.]+/, `/themes/${jqTheme}`);
       });
 
-    const css = this.getSetting("xanadoCSS");
+    const css = this.getSetting("layout");
     if (css)
+      // Replace the link for the CSS
       $("#xanadoCSS").each(function() {
         if (this.href)
           this.href = this.href.replace(/\/css\/[^/.]+/, `/css/${css}`);
@@ -260,7 +262,7 @@ class UI {
           // Handle special case of a button that opens a dialog.
           // When the dialog closes, a focusin event is sent back
           // to the tooltip, that we want to ignore.
-          if (event.originalEvent.type === "focusin")
+          if (event.originalEvent && event.originalEvent.type === "focusin")
             ui.tooltip.hide();
         }
         /* c8 ignore stop */
@@ -338,8 +340,8 @@ class UI {
    * @return {Promise} promise that resolves to
    * a list of css name strings.
    */
-  promiseCSS() {
-    assert.fail("UI.promiseCSS");
+  promiseLayouts() {
+    assert.fail("UI.promiseLayouts");
   }
 
   /**

@@ -69,7 +69,7 @@ describe("standalone/StandaloneUIMixin", () => {
   it("get...", () => {
     const ui = new Test();
     return Promise.all([
-      ui.promiseCSS(),
+      ui.promiseLayouts(),
       Platform.readFile(Platform.getFilePath(`css/index.json`))])
     .then(data => assert.deepEqual(data[0], data[1]))
 

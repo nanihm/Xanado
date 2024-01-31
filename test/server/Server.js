@@ -39,7 +39,7 @@ describe("server/Server.js", () => {
       timePenalty: 0
     },
     user_defaults: {
-      theme: "default"
+      layout: "default"
     },
     games: "delayed",
     html_dir: "html"

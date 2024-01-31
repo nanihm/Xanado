@@ -24,7 +24,7 @@ describe("client/ClientGamesUI", () => {
   };
 
   const USER_DEFAULTS = {
-    theme: "default",
+    layout: "default",
     jqTheme: "invader"
   };
 
@@ -33,7 +33,7 @@ describe("client/ClientGamesUI", () => {
     key: "human",
     settings: {
       "language": "en",
-      "xanadoCSS": "default",
+      "layout": "default",
       "jqTheme": "vader",
       "turn_alert": false,
       "cheers": false,
@@ -107,14 +107,13 @@ describe("client/ClientGamesUI", () => {
         //debug: console.debug
       }))
     .then(() => {
-      console.debug("Logged in");
+      //console.debug("Logged in");
       $("#signout-button").trigger("click");
     })
     .then(() => expectDialog(
       "UserSettingsDialog",
       () => $("#personaliseButton").trigger("click")))
     .then(() => {
-      console.debug("USD done");
       return expectDialog(
         "GameSetupDialog",
         () => $("#create-game").trigger("click"));

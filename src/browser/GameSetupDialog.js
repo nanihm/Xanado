@@ -113,10 +113,6 @@ class GameSetupDialog extends Dialog {
         .then(editions => {
           const $eds = this.$dlg.find("[name=edition]");
           editions.forEach(e => $eds.append(`<option value="${e}">${e}</option>`));
-          if (ui.getSetting("edition")) {
-            $eds.val(ui.getSetting("edition"));
-            $eds.selectmenu("refresh");
-          }
         }),
         ui.promiseDictionaries()
         .then(dictionaries => {
@@ -124,9 +120,6 @@ class GameSetupDialog extends Dialog {
           dictionaries
           .forEach(d => $dics.append($(`<option value="${d}">${d}</option>`)));
           $dics.on("selectmenuchange", () => this.showFeedbackFields());
-          const seldic = ui.getSetting("dictionary");
-          if (seldic)
-            $dics.val(seldic).selectmenu("refresh");
           this.showFeedbackFields();
         })
       ]);
@@ -150,21 +143,13 @@ class GameSetupDialog extends Dialog {
       $fields.each((i, el) => {
         const $el = $(el);
         const field = $el.attr("name");
-        let val = game ? game[field] : (
-          ui.getSetting(field) || Game.DEFAULTS[field]);
-        if (el.tagName === "INPUT" && el.type === "checkbox") {
-          //console.debug("SET", field, "=", val);
+        const val = (game ? game[field] : undefined) || ui.getSetting(field);
+        if (el.tagName === "INPUT" && el.type === "checkbox")
           $el.prop("checked", val).checkboxradio("refresh");
-        } else if (el.tagName === "SELECT") {
-          if (typeof val === "undefined")
-            val = this.options.ui.getSetting(field);
-          //console.debug("SELECT", field, "=", val);
-          $el.val(val || "none");
-          $el.selectmenu("refresh");
-        } else if (val) {
-          //console.debug("SET", field, "=", val);
+        else if (el.tagName === "SELECT")
+          $el.val(val).selectmenu("refresh");
+        else if (val)
           $el.val(val);
-        }
         return true;
       });
       this.showTimerFields();

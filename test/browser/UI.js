@@ -22,7 +22,7 @@ describe("browser/UI", () => {
         getSetting(t) {
           return this.settings[t];
         }
-        promiseCSS() { return Promise.resolve([ "A", "B" ]); }
+        promiseLayouts() { return Promise.resolve([ "A", "B" ]); }
         promiseLocales() { return Promise.resolve([ "en", "fr" ]); }
       };
     }));
@@ -67,11 +67,11 @@ describe("browser/UI", () => {
       getSetting(t) {
         switch (t) {
         case "jqTheme": return "le-frog";
-        case "xanadoCSS": return "exander77";
+        case "layout": return "exander77";
         default: assert.fail(t); return false;
         }
       }
-      promiseCSS() { return Promise.resolve([]); }
+      promiseLayouts() { return Promise.resolve([]); }
     }
     (new NUI()).initTheme();
     let url = $("#xanadoCSS").attr("href");
@@ -134,7 +134,7 @@ describe("browser/UI", () => {
         assert.fail(t); return false;
       }
       promiseLocales() { return Promise.resolve([ "en", "fr" ]); }
-      promiseCSS() { return Promise.resolve([]); }
+      promiseLayouts() { return Promise.resolve([]); }
     }
     const ui = new NUI();
     return ui.initLocale()
