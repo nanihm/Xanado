@@ -9,9 +9,11 @@ import { TestSocket } from '../TestSocket.js';
 
 import { stringify } from "../../src/common/Utils.js";
 import { Game as _Game } from "../../src/game/Game.js";
+import { Turn as _Turn } from "../../src/game/Turn.js";
 import { Commands } from "../../src/game/Commands.js";
 const Game = Commands(_Game);
 const Player = Game.CLASSES.Player;
+const Turn = Game.CLASSES.Turn;
 
 /**
  * Unit tests for behavious specific to timed games
@@ -42,28 +44,28 @@ describe("game/TimedGame", function() {
       switch (seqNo) {
       case 2:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.TIMED_OUT);
+        assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 4:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.TIMED_OUT);
+        assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 6:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.TIMED_OUT);
+        assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 8:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.TIMED_OUT);
+        assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.gameKey, game.key);
@@ -73,7 +75,7 @@ describe("game/TimedGame", function() {
           { key: "human1", tiles: -1, tilesRemaining: "A" },
           { key: "human2", tiles: -1, tilesRemaining: "A" }
         ]);
-        assert.equal(turn.type, Game.Turns.GAME_ENDED);
+        assert.equal(turn.type, Turn.Type.GAME_ENDED);
         assert.equal(turn.endState, Game.State.TWO_PASSES);
         assert.equal(turn.gameKey, game.key);
         assert(!turn.nextToGoKey);
@@ -128,34 +130,34 @@ describe("game/TimedGame", function() {
       switch (seqNo) {
       case 2:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 3:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 5:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 6:
         assert.equal(turn.score, 0);
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.gameKey, game.key);
         break;
       case 7:
-        assert.equal(turn.type, Game.Turns.GAME_ENDED);
+        assert.equal(turn.type, Turn.Type.GAME_ENDED);
         assert.equal(turn.endState, Game.State.TWO_PASSES);
         assert.equal(turn.score[0].tiles, -1);
         assert.equal(turn.score[1].tiles, -1);
@@ -202,12 +204,12 @@ describe("game/TimedGame", function() {
     })
     .then(() => game.connect(socket, human1.key))
     .then(() => awaitTick())
-    .then(() => game.pass(human1, Game.Turns.PASSED))
+    .then(() => game.pass(human1, Turn.Type.PASSED))
     // human 2 plays as soon as possible
-    .then(() => game.pass(human2, Game.Turns.PASSED))
+    .then(() => game.pass(human2, Turn.Type.PASSED))
     .then(() => awaitTick())
-    .then(() => game.pass(human1, Game.Turns.PASSED))
-    .then(() => game.pass(human2, Game.Turns.PASSED))
+    .then(() => game.pass(human1, Turn.Type.PASSED))
+    .then(() => game.pass(human2, Turn.Type.PASSED))
     .then(() => socket.wait());
   });
 });

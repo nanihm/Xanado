@@ -4,6 +4,7 @@
 
 import { Tile } from "./Tile.js";
 import { Move } from "./Move.js";
+import { Game } from "./Game.js";
 
 /**
  * Despite the name, a Turn is used not just as a historical record
@@ -12,6 +13,41 @@ import { Move } from "./Move.js";
  * @extends Move
  */
 class Turn extends Move {
+
+  /**
+   * Different types of {@linkcode Turn}
+   * * PLAYED - some tiles were placed on the board
+   * * SWAPPED - player swapped for fresh tiles from the bag
+   * * GAME_ENDED - game is over
+   * * CHALLENGE_LOST - player challenged, and lost
+   * * CHALLENGE_WON - player challenged, and won
+   * * TOOK_BACK - player took back their play
+   * * PASSED - player passed
+   * * TIMED_OUT - player was timed out (if timer type is `TURN`)
+   * @typedef {PLAYED|SWAPPED|GAME_ENDED|CHALLENGE_LOST|CHALLENGE_WON|TOOK_BACK|PASSED|TIMED_OUT} Turn.Type
+   */
+  static Type = {
+    PLAYED:         "play",
+    SWAPPED:        "swap",
+    GAME_ENDED:     "game-over",
+    CHALLENGE_LOST: "challenge-lost",
+    CHALLENGE_WON:  "challenge-won",
+    TOOK_BACK:      "took-back",
+    PASSED:         "passed",
+    TIMED_OUT:      "timed-out"
+  };
+
+  static TypeNames = [
+    Turn.Type.PLAYED,
+    Turn.Type.SWAPPED,
+    Turn.Type.GAME_ENDED,
+    Turn.Type.CHALLENGE_LOST,
+    Turn.Type.CHALLENGE_WON,
+    Turn.Type.TOOK_BACK,
+    Turn.Type.PASSED,
+    Turn.Type.TIMED_OUT
+  ];
+
   /**
    * The 'type' of the turn.
    * @member {Turns}
@@ -71,7 +107,7 @@ class Turn extends Move {
 
     if (params.challengerKey)
       /**
-       * For `Game.Turns.CHALLENGE_WON` and `Game.Turns.CHALLENGE_LOST`,
+       * For `Turn.Type.CHALLENGE_WON` and `Turn.Type.CHALLENGE_LOST`,
        * the key of the player who challenged. playerkey in this case
        * will be the player who's play was challenged (always the
        * previous player)
@@ -82,7 +118,7 @@ class Turn extends Move {
     if (params.endState)
       /**
        * String describing the reason the game ended. Only used when
-       * type==Game.Turns.GAME_ENDED
+       * type==Turn.Type.GAME_ENDED
        * @member {State?}
        */
       this.endState = params.endState;
@@ -108,6 +144,57 @@ class Turn extends Move {
       type: this.type,
       timestamp: this.timestamp
     };
+  }
+
+  /**
+   * Encode the turn in a URI parameter block
+   * @return {string} parameter string for embedding in a URL to recreate
+   * the turn.
+   */
+  pack() {
+    const params = {};
+    if (this.challengerKey) params.c = this.challengerKey;
+    if (this.endState) params.e = this.endState;
+    params.m = this.timestamp;
+    params.n = this.nextToGoKey;
+    params.p = this.playerKey;
+    if (this.replacements)
+      params.r = this.replacements.map(t => t.letter).join("");
+    if (this.score)
+      params.s = this.score;
+    params.t = Turn.TypeNames.indexOf(this.type);
+    if (this.passes && this.passes > 0) params.x = this.passes;
+    return params;
+  }
+
+  /**
+   * Repopulate the turn from a parameter block.
+   * @param {Object} params parameter block
+   * @param {number} index index of this player in the parameter block
+   * @param {Edition} edition edition, used to get letter scores for
+   * tiles.
+   */
+  unpack(params, index, edition) {
+    if (params[`T${index}c`])
+      this.challengerKey = params[`T${index}c`];
+    if (params[`T${index}e`])
+      this.endState = params[`T${index}e`];
+    this.timestamp = Number(params[`T${index}m`]);
+    if (params[`T${index}n`])
+      this.nextToGoKey = params[`T${index}n`];
+    this.playerKey = params[`T${index}p`];
+    if (params[`T${index}r`]) {
+      const ls = params[`T${index}r`].split("");
+      this.replacements = ls.map(l => new Tile({
+        letter: l,
+        score: edition.letterScore(l)
+      }));
+    }
+    if (params[`T${index}s`])
+      this.score = Number(params[`T${index}s`]);
+    this.type = Turn.TypeNames[params[`T${index}t`]];
+    if (params[`T${index}x`])
+      this.passes = params[`T${index}x`];
   }
 
   /**

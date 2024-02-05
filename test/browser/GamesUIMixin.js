@@ -5,6 +5,7 @@
 import { assert } from "chai";
 import { setupPlatform, setup$ } from "../TestPlatform.js";
 import { Game } from "../../src/game/Game.js";
+import { Turn } from "../../src/game/Turn.js";
 import { GamesUIMixin } from "../../src/browser/GamesUIMixin.js";
 
 describe("browser/GamesUIMixin", () => {
@@ -75,7 +76,7 @@ describe("browser/GamesUIMixin", () => {
           { key: "player1", name: "one", score: -999 }
         ],
         turns: [
-          { state: Game.Turns.GAME_ENDED }
+          { state: Turn.Type.GAME_ENDED }
         ]
       },
       {

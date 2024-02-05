@@ -97,7 +97,6 @@ class StandaloneGameUI extends StandaloneUIMixin(GameUIMixin(UI)) {
 
         switch (verb) {
         case "autoplay":
-          // Tell *everyone else* that they asked for a hint
           be.game.autoplay();
           break;
         case "hint":
@@ -128,6 +127,15 @@ class StandaloneGameUI extends StandaloneUIMixin(GameUIMixin(UI)) {
         this.debug(`Loading game ${this.args.game} from local storage`);
         return this.db.get(this.args.game)
         .then(d => CBOR.decode(d, BackendGame.CLASSES))
+        .then(game => {
+          this.backendGame = game;
+          this.backendGame._debug = this.debug;
+          return game.onLoad(this.db);
+        });
+
+      } else if (this.args.uri) {
+        this.debug("Loading game from URI");
+        return BackendGame.unpack(this.args)
         .then(game => {
           this.backendGame = game;
           this.backendGame._debug = this.debug;

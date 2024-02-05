@@ -45,7 +45,7 @@ class Move {
        * List of tiles placed in this move. Tiles are required
        * to carry col, row positions where they were placed.  In
        * a Turn, for type=`move` it indicates the move. For
-       * `Game.Turns.TOOK_BACK` and `Game.Turns.CHALLENGE_WON` it is
+       * `Turn.Type.TOOK_BACK` and `Turn.Type.CHALLENGE_WON` it is
        * the move just taken back/challenged.
        * Note that we instatiate game Tiles, without taking account
        * of the context of the call; Move is used for comms

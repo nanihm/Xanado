@@ -121,29 +121,6 @@ class Game {
   };
 
   /**
-   * Different types of {@linkcode Turn}
-   * * PLAY - some tiles were placed on the board
-   * * SWAP - player swapped for fresh tiles from the bag
-   * * GAME_OVER - game is over
-   * * CHALLENGE_LOST - player challenged, and lost
-   * * CHALLENGE_WON - player challenged, and won
-   * * TOOK_BACK - player took back their play
-   * * PASSED - player passed
-   * * TIMED_OUT - player was timed out (if timer type is `TURN`)
-   * @typedef {PLAYED|SWAPPED|GAME_ENDED|CHALLENGE_LOST|CHALLENGE_WON|TOOK_BACK|PASSED|TIMED_OUT} Game.Turns
-   */
-  static Turns = {
-    PLAYED:         "play",
-    SWAPPED:        "swap",
-    GAME_ENDED:     "game-over",
-    CHALLENGE_LOST: "challenge-lost",
-    CHALLENGE_WON:  "challenge-won",
-    TOOK_BACK:      "took-back",
-    PASSED:         "passed",
-    TIMED_OUT:      "timed-out"
-  };
-
-  /**
    * Types of game timer
    * * `NONE` - game is untimed
    * * `TURN` - each turn is time-limited
@@ -544,11 +521,11 @@ class Game {
   /**
    * Add a player to the game.
    * @param {Player} player
-   * @param {boolean?} fillRack true to fill the player's rack
-   * from the game's letter bag.
+   * @param {boolean} fillRack true to fill the player's rack
+   * from the game's letter bag. Default false.
    * @return {Game} this
    */
-  addPlayer(player, fillRack) {
+  addPlayer(player, fillRack = false) {
     assert(this.letterBag, "Cannot addPlayer() before create()");
     assert(
       !this.maxPlayers || this.players.length < this.maxPlayers,
@@ -831,7 +808,7 @@ class Game {
    * `rackSize`, `swapSize`, `bonuses`, `turns` will be a list of
    * {@linkcode Turn#serialisable|Turn.serialisable}, and `players`
    * will be a list of {@linkcode Player#serialisable|Player.serialisable}.
-   * @param {UserManager} um user manager object for getting emails; only
+   * @param {UserManager?} um user manager object for getting emails; only
    * works on server side
    * @return {Promise} resolving to a simple object with
    * key game data
@@ -876,6 +853,138 @@ class Game {
       if (this.allowTakeBack) simple.allowTakeBack = true;
 
       return simple;
+    });
+  }
+
+  /**
+   * Encode the game in a URI parameter block
+   * @return {string} parameter string for embedding in a URL to recreate
+   * the game.
+   */
+  pack() {
+    const params = {};
+
+    const StateNames = Object.values(Game.State);
+    const TimerNames = Object.values(Game.Timer);
+    const PenaltyNames = Object.values(Game.Penalty);
+    const WordCheckNames = Object.values(Game.WordCheck);
+
+    params.a = this.lastActivity();
+    params.b = this.board.pack();
+    if (this.challengePenalty) {
+      params.c = PenaltyNames.indexOf(this.challengePenalty);
+      params.o = this.penaltyPoints;
+    }
+    params.d = this.dictionary;
+    params.e = this.edition;
+    if (this.allowTakeBack) params.g = true;
+    if (this.predictScore) params.i = true;
+    params.k = this.key;
+    params.m = this.creationTimestamp;
+    if (this.nextGameKey) params.n = this.nextGameKey;
+    this.players.forEach((player, index) => {
+      const p = player.pack();
+      for (const key in p)
+        params[`P${index}${key}`] = p[key];
+    });
+    if (this.allowUndo) {
+      this.turns.forEach((turn, index) => {
+        const t = turn.pack();
+        for (const key in t)
+          params[`T${index}${key}`] = t[key];
+      });
+    } else if (this.turns.length > 0) {
+      const t = this.turns[this.turns.length - 1].pack();
+      for (const key in t)
+        params[`T0${key}`] = t[key];
+    }
+    params.s = StateNames.indexOf(this.state);
+    if (this.timerType) params.t = TimerNames.indexOf(this.timerType);
+    if (this.allowUndo) params.u = true;
+    if (this.wordCheck) params.v = WordCheckNames.indexOf(this.wordCheck);
+    if (this.whosTurnKey) params.w = this.whosTurnKey;
+    if (this.timerType != Game.TIMER_NONE) {
+      params.x = this.timeAllowed;
+      params.y = this.timePenalty;
+    }
+
+    const s = [];
+    for (const k in params) {
+      if (typeof params[k] === "boolean")
+        s.push(k);
+      else
+        s.push(`${k}=${encodeURI(params[k])}`);
+    }
+    return s.join(";");
+  }
+
+  /**
+   * Promise to construct a game from URI parameters.
+   * @param {Object} params URI parameters
+   * @return {Promise} a promise that resolves to a new game
+   */
+  static unpack(params) {
+    const StateNames = Object.values(Game.State);
+    const TimerNames = Object.values(Game.Timer);
+    const PenaltyNames = Object.values(Game.Penalty);
+    const WordCheckNames = Object.values(Game.WordCheck);
+
+    let game;
+    return new Game({ edition: params.e })
+    .create()
+    .then(g => game = g)
+    .then(() => game.promiseEdition())
+    .then(edition => {
+      game.board.unpack(params.b, edition);
+      game.board.forEachTiledSquare(sq => {
+        game.letterBag.removeTile(sq.tile);
+        return false;
+      });
+      if (params.c) {
+        game.challengePenalty = PenaltyNames[params.c];
+        game.penaltyPoints = params.o;
+      }
+      game.dictionary = params.d;
+      game.edition = params.e;
+      game.state = StateNames[params.s];
+      if (params.g) game.allowTakeBack = true;
+      if (params.i) game.predictScore = true;
+      game.key = params.k;
+      game.creationTimestamp = Number(params.m);
+      if (params.t) {
+        game.timerType = TimerNames[params.t];
+        game.timeAllowed = Number(params.x);
+        game.timePenalty = Number(params.y);
+      }
+      if (params.u) game.allowUndo = true;
+      if (params.v) game.wordCheck = WordCheckNames[params.v];
+      if (params.w) game.whosTurnKey = params.w;
+      if (params.n) game.nextGameKey = params.n;
+
+      game.players = [];
+      let index = 0;
+      while (params[`P${index}k`]) {
+        const p = new Player(
+          { key: params[`P${index}k`] },
+          game.constructor.CLASSES);
+        p.unpack(params, index, edition);
+        game.addPlayer(p, false);
+        p.rack.forEachTiledSquare(sq => {
+          game.letterBag.removeTile(sq.tile);
+          return false;
+        });
+        index++;
+      }
+
+      index = 0;
+      game.turns = [];
+      while (params[`T${index}t`]) {
+        const t = new Turn({ gameKey: game.key });
+        t.unpack(params, index, edition);
+        game.turns.push(t);
+        index++;
+      }
+      return game;
     });
   }
 
@@ -1235,7 +1344,7 @@ class Game {
       // Make the player pass when their clock reaches 0
       player.setTimeout(
         timeout || this.timeAllowed * 60,
-        () => this.pass(player, Game.Turns.TIMED_OUT));
+        () => this.pass(player, Turn.Type.TIMED_OUT));
 
     return Promise.resolve(this);
   }
@@ -1264,7 +1373,7 @@ class Game {
     // challenge is a Promise that will resolve to true if a
     // challenge is made, or false otherwise.
     let lastPlay = this.lastTurn();
-    if (lastPlay && lastPlay.type === Game.Turns.PLAYED
+    if (lastPlay && lastPlay.type === Turn.Type.PLAYED
         && this.dictionary
         && player.canChallenge) {
       const lastPlayer = this.getPlayerWithKey(lastPlay.playerKey);
@@ -1285,7 +1394,7 @@ class Game {
             /* c8 ignore next 2 */
             if (this._debug)
               this._debug("Bad words:", bad);
-            return this.takeBack(player, Game.Turns.CHALLENGE_WON)
+            return this.takeBack(player, Turn.Type.CHALLENGE_WON)
             .then(() => true);
           }
           return false; // no challenge made
@@ -1326,7 +1435,7 @@ class Game {
         /* c8 ignore next 2 */
         if (this._debug)
           this._debug(player.name, "can't play, passing");
-        return this.pass(player, Game.Turns.PASSED);
+        return this.pass(player, Turn.Type.PASSED);
       });
     });
   }

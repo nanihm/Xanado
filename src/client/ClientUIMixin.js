@@ -20,6 +20,7 @@ import "jquery";
 import "jquery-ui";
 
 import { Game } from "../game/Game.js";
+import { Turn } from "../game/Turn.js";
 import { Tile } from "../game/Tile.js";
 import { UI } from "../browser/UI.js";
 
@@ -105,7 +106,7 @@ const ClientUIMixin = superclass => class extends superclass {
     if (prob < 0.1 && this.game.turns.length > 0) {
       // Can we challenge the last turn?
       let challengeable = this.game.turns[this.game.turns.length - 1];
-      if (challengeable.type === Game.Turns.PLAYED) {
+      if (challengeable.type === Turn.Type.PLAYED) {
         this.sendCommand(Game.Command.CHALLENGE, {
           challengedKey: challengeable.playerKey
         });

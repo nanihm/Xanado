@@ -11,11 +11,13 @@ import sparseEqual from "../sparseEqual.js";
 import { stringify } from "../../src/common/Utils.js";
 import { Commands } from "../../src/game/Commands.js";
 import { Game as _Game } from "../../src/game/Game.js";
+import { Turn as _Turn } from "../../src/game/Turn.js";
 // disable worker threads
 _Game.USE_WORKERS = false;
 
 const Game = Commands(_Game);
 Game.CLASSES.Game = Game;
+const Turn = Game.CLASSES.Turn;
 const Tile = Game.CLASSES.Tile;
 const Move = Game.CLASSES.Move;
 const Player = Game.CLASSES.Player;
@@ -44,7 +46,7 @@ describe("game/Commands.js", () => {
     .on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch (seqNo) {
       case 2:
-        assert.equal(turn.type, Game.Turns.SWAPPED);
+        assert.equal(turn.type, Turn.Type.SWAPPED);
         assert(!turn.words);
         assert.deepEqual(turn.placements.map(t=>t.letter).sort(),
                          ["A","C","E"]);// tiles that were replaced
@@ -67,7 +69,7 @@ describe("game/Commands.js", () => {
     const socket2 = new TestSocket();
     socket2.on(Game.Notify.TURN, (turn) => {
       // human2 should see a redacted version of the SWAPPED turn
-      assert.equal(turn.type, Game.Turns.SWAPPED);
+      assert.equal(turn.type, Turn.Type.SWAPPED);
       assert(!turn.words);
       assert.deepEqual(turn.placements.map(t=>t.letter).sort(),
                        ["A","C","E"]);// tiles that were replaced
@@ -189,7 +191,7 @@ describe("game/Commands.js", () => {
     const handle = (turn, event, seqNo) => {
       switch (seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert(!turn.words);
         assert(!turn.placements);
         assert(!turn.replacements);
@@ -221,7 +223,7 @@ describe("game/Commands.js", () => {
       game.whosTurnKey = human1.key;
     })
     .then(() => game.connect(socket, human1.key))
-    .then(() => game.pass(human1, Game.Turns.PASSED))
+    .then(() => game.pass(human1, Turn.Type.PASSED))
     .then(g => assert.strictEqual(g, game))
     .then(() => socket.wait());
   });
@@ -252,7 +254,7 @@ describe("game/Commands.js", () => {
     socket1.on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch (seqNo) {
       case 5:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.score, move.score);
@@ -297,7 +299,7 @@ describe("game/Commands.js", () => {
     socket2.on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch(seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.score, move.score);
@@ -390,7 +392,7 @@ describe("game/Commands.js", () => {
       switch (seqNo) {
       case 2:
       case 3:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         if (seqNo === 3)
           socket1.done();
         break;
@@ -425,7 +427,7 @@ describe("game/Commands.js", () => {
     socket2.on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch(seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         socket2.done();
         break;
       default:
@@ -492,7 +494,7 @@ describe("game/Commands.js", () => {
     const socket = new TestSocket();
     socket.on(Game.Notify.TURN, (turn) => {
       //console.debug(turn, event);
-      assert.equal(turn.type, Game.Turns.PLAYED);
+      assert.equal(turn.type, Turn.Type.PLAYED);
       assert.equal(turn.playerKey, human1.key);
       assert.equal(turn.nextToGoKey, human2.key);
       assert.equal(turn.score, move.score);
@@ -539,7 +541,7 @@ describe("game/Commands.js", () => {
     const socket = new TestSocket();
     socket.on(Game.Notify.TURN, (turn, event) => {
       assert.equal(event, Game.Notify.TURN);
-      assert.equal(turn.type, Game.Turns.GAME_ENDED);
+      assert.equal(turn.type, Turn.Type.GAME_ENDED);
       assert.deepEqual(
         turn.score,
         [
@@ -603,11 +605,11 @@ describe("game/Commands.js", () => {
     socket.on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch (seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         sparseEqual(turn, move);
         break;
       case 2:
-        assert.equal(turn.type, Game.Turns.TOOK_BACK);
+        assert.equal(turn.type, Turn.Type.TOOK_BACK);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.score, -3);
@@ -652,7 +654,7 @@ describe("game/Commands.js", () => {
       assert(game.letterBag.isEmpty());
     })
     // Player 0 takes their move back, tils should return to the bag
-    .then(() => game.takeBack(human1, Game.Turns.TOOK_BACK))
+    .then(() => game.takeBack(human1, Turn.Type.TOOK_BACK))
     .then(g => {
       assert.strictEqual(g, game);
       assert.deepEqual(game.letterBag.letters().sort(),

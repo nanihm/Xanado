@@ -11,9 +11,11 @@ import { TestSocket } from "../TestSocket.js";
 import sparseEqual from "../sparseEqual.js";
 import { Commands } from "../../src/game/Commands.js";
 import { Game as _Game } from "../../src/game/Game.js";
+import { Turn as _Turn } from "../../src/game/Turn.js";
 _Game.USE_WORKERS = false;
 const Game = Commands(_Game);
 Game.CLASSES.Game = Game;
+const Turn = Game.CLASSES.Turn;
 const Tile = Game.CLASSES.Tile;
 const Player = Game.CLASSES.Player;
 const Move = Game.CLASSES.Move;
@@ -55,13 +57,13 @@ describe("game/Challenges", () => {
       switch (seqNo) {
       case 1:
         // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
-        assert.equal(turn.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_LOST);
         assert.equal(turn.score, 0);
         assert.equal(turn.playerKey, human1.key); // who was challenged
         assert.equal(turn.challengerKey, human2.key); // who issued the challenged
@@ -132,7 +134,7 @@ describe("game/Challenges", () => {
     socket.on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch (seqNo) {
       case 1: // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
@@ -140,7 +142,7 @@ describe("game/Challenges", () => {
 
       case 2: // challenge failed
         assert.equal(game.whosTurnKey, human2.key);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_LOST);
         assert.equal(turn.score, -5);
         assert.equal(turn.playerKey, human1.key); // who was challenged
         assert.equal(turn.challengerKey, human2.key); // who issued the challenged
@@ -210,14 +212,14 @@ describe("game/Challenges", () => {
       switch (seqNo) {
       case 1:
         // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
         //console.debug("bad challenge by not-next player", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_LOST);
         assert.equal(turn.score, -200);
         assert.equal(turn.challengerKey, human3.key); // who challenged them
         assert.equal(turn.playerKey, human1.key); // who was challenged
@@ -280,14 +282,14 @@ describe("game/Challenges", () => {
       switch (seqNo) {
       case 1:
         // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
         //console.debug("bad challenge by not-next player", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_LOST);
         assert.equal(turn.score, 0);
         assert.equal(turn.challengerKey, human3.key); // who challenged them
         assert.equal(turn.playerKey, human1.key); // who was challenged
@@ -347,14 +349,14 @@ describe("game/Challenges", () => {
       switch (seqNo) {
       case 1:
         // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
         //console.debug("good challenge by next player", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_WON);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_WON);
         assert.equal(turn.challengerKey, human2.key);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
@@ -418,14 +420,14 @@ describe("game/Challenges", () => {
       switch (seqNo) {
       case 1:
         // Human"s move
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
         //console.debug("good challenge by not-next player", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_WON);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_WON);
         assert.equal(turn.score, -99);
         assert.equal(turn.challengerKey, human3.key); // who challenged them
         assert.equal(turn.playerKey, human1.key); // who was challenged
@@ -546,12 +548,12 @@ describe("game/Challenges", () => {
     .on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch(seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         sparseEqual(turn, move);
         break;
       case 2:
         //console.debug("good challenge of final play", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_WON);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_WON);
         assert.equal(turn.challengerKey, human2.key);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
@@ -619,7 +621,7 @@ describe("game/Challenges", () => {
         break;
       case 2:
         //console.debug("good challenge of final play by not-next", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_WON);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_WON);
         assert.deepEqual(turn.score, -3);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.challengerKey, human3.key);
@@ -664,7 +666,7 @@ describe("game/Challenges", () => {
   });
 
   // A bad challenge of the final play by the next player is treated
-  // as a Game.Turns.GAME_ENDED with appropriate end state.
+  // as a Turn.Type.GAME_ENDED with appropriate end state.
   it("bad challenge of final play by next player - miss turn", () => {
     const game = new Game({
       edition:"Test",
@@ -699,7 +701,7 @@ describe("game/Challenges", () => {
         break;
       case 2:
         //console.debug("bad challenge of final play", turn);
-        assert.equal(turn.type, Game.Turns.GAME_ENDED);
+        assert.equal(turn.type, Turn.Type.GAME_ENDED);
         assert.equal(turn.endState, Game.State.FAILED_CHALLENGE);
         assert.deepEqual(turn.score, [
           { key: "human1", tiles: 4 }, { key: "human2", tiles: -4, tilesRemaining: "Q"}]);
@@ -737,7 +739,7 @@ describe("game/Challenges", () => {
   });
 
   // If the bad challenge is from a not-next player,
-  // it should generate a turn{type=Game.Turns.CHALLENGE_LOST}.
+  // it should generate a turn{type=Turn.Type.CHALLENGE_LOST}.
   it("bad challenge of final play by not-next player - miss turn", () => {
     const game = new Game({
       edition:"Test",
@@ -774,7 +776,7 @@ describe("game/Challenges", () => {
         break;
       case 2:
         //console.debug("bad challenge of final play by not-next", turn);
-        assert.equal(turn.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_LOST);
         // a failed challenge by not-next incurs no penalty under
         // default rules.
         assert.deepEqual(turn.score, 0);
@@ -853,27 +855,27 @@ describe("game/Challenges", () => {
     const handle = (turn, event, seqNo) => {
       switch (seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.score, move1.score);
         assert.equal(game.whosTurnKey, human2.key);
         break;
       case 2:
-        assert.equal(turn.type, Game.Turns.CHALLENGE_WON);
+        assert.equal(turn.type, Turn.Type.CHALLENGE_WON);
         assert.equal(turn.challengerKey, human2.key);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.score, -move1.score);
         break;
       case 3:
-        assert.equal(turn.type, Game.Turns.PASSED);
+        assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
         assert.equal(turn.score, 0);
         break;
       case 4:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
         assert.equal(turn.score, move2.score);
@@ -900,7 +902,7 @@ describe("game/Challenges", () => {
     .then(() => game.connect(socket, human1.key))
     .then(() => game.play(human1, move1))
     .then(() => game.challenge(human2, human1)) // should succeed
-    .then(() => game.pass(human2, Game.Turns.PASSED))
+    .then(() => game.pass(human2, Turn.Type.PASSED))
     .then(() => game.play(human1, move2))
     .then(() => socket.wait())
     .then(() => {
@@ -948,13 +950,13 @@ describe("game/Challenges", () => {
         // John still has a tile ('D') but there should be no replacements
         // as the bag is empty
         assert.equal(event, Game.Notify.TURN);
-        assert.equal(data.type, Game.Turns.PLAYED);
+        assert.equal(data.type, Turn.Type.PLAYED);
         assert.deepEqual(data.replacements, []);
         break;
       case 3:
         assert.equal(event, Game.Notify.TURN);
         // Paul's challenge failed
-        assert.equal(data.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(data.type, Turn.Type.CHALLENGE_LOST);
         js.done();
         break;
       default:
@@ -969,13 +971,13 @@ describe("game/Challenges", () => {
         assert.equal(event, Game.Notify.CONNECTIONS); break;
       case 1:
         assert.equal(event, Game.Notify.TURN);
-        assert.equal(data.type, Game.Turns.PLAYED);
+        assert.equal(data.type, Turn.Type.PLAYED);
         assert.deepEqual(data.replacements, []);
         break;
       case 2:
         assert.equal(event, Game.Notify.TURN);
         // Paul's challenge failed
-        assert.equal(data.type, Game.Turns.CHALLENGE_LOST);
+        assert.equal(data.type, Turn.Type.CHALLENGE_LOST);
         js.done();
         break;
       default:

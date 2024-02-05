@@ -8,6 +8,7 @@
 import { Undo } from "../game/Undo.js";
 import { Commands } from "../game/Commands.js";
 import { Game } from "../game/Game.js";
+import { Turn } from "../game/Turn.js";
 import { BrowserSquare } from "./BrowserSquare.js";
 import { BrowserTile } from "./BrowserTile.js";
 import { BrowserBoard } from "./BrowserBoard.js";
@@ -179,7 +180,7 @@ class BrowserGame extends Undo(Commands(Game)) {
    * @return {jQuery} a jquery div
    */
   describeTurn(turn, uiPlayer, isLastTurn) {
-    if (turn.type === Game.Turns.GAME_ENDED)
+    if (turn.type === Turn.Type.GAME_ENDED)
       return this.describeGameOver(turn, uiPlayer);
 
     const $description = $(document.createElement("div"))
@@ -194,7 +195,7 @@ class BrowserGame extends Undo(Commands(Game)) {
           ? this.getPlayerWithKey(turn.challengerKey) : undefined;
 
     let what, who;
-    if (turn.type === Game.Turns.CHALLENGE_LOST) {
+    if (turn.type === Turn.Type.CHALLENGE_LOST) {
       what = $.i18n("log-challenge");
       if (challenger === uiPlayer)
         who = $.i18n("Your");
@@ -237,7 +238,7 @@ class BrowserGame extends Undo(Commands(Game)) {
 
     switch (turn.type) {
 
-    case Game.Turns.PLAYED:
+    case Turn.Type.PLAYED:
       $action.append(this.$formatScore(turn, false));
       // Check if the play emptied the rack of the playing player
       if (isLastTurn
@@ -258,25 +259,25 @@ class BrowserGame extends Undo(Commands(Game)) {
       }
       break;
 
-    case Game.Turns.SWAPPED:
+    case Turn.Type.SWAPPED:
       $action.append($.i18n(
         "log-swapped",
         turn.replacements.length));
       break;
 
-    case Game.Turns.TIMED_OUT:
+    case Turn.Type.TIMED_OUT:
       $action.append($.i18n("log-timed-out"));
       break;
 
-    case Game.Turns.PASSED:
+    case Turn.Type.PASSED:
       $action.append($.i18n("log-passed"));
       break;
 
-    case Game.Turns.TOOK_BACK:
+    case Turn.Type.TOOK_BACK:
       $action.append($.i18n("log-took-back"));
       break;
 
-    case Game.Turns.CHALLENGE_WON:
+    case Turn.Type.CHALLENGE_WON:
       $action.append($.i18n(
         "log-challenge-won",
         challengerIndicative, playerPossessive)
@@ -286,7 +287,7 @@ class BrowserGame extends Undo(Commands(Game)) {
                        playerIndicative, turn.score));
       break;
 
-    case Game.Turns.CHALLENGE_LOST:
+    case Turn.Type.CHALLENGE_LOST:
       $action.append($.i18n(
         "log-chall-fail",
         challengerPossessive, playerPossessive));
@@ -315,7 +316,7 @@ class BrowserGame extends Undo(Commands(Game)) {
 
   /**
    * Append a formatted 'end of game' message to the log
-   * @param {Turn} turn a Game.Turns.GAME_ENDED Turn
+   * @param {Turn} turn a Turn.Type.GAME_ENDED Turn
    * @param {Player} uiPlayer the player who's UI the description is
    * being generated for
    * @return {jQuery} a jquery div

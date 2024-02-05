@@ -1,6 +1,7 @@
 /* See README.md at the root of this distribution for copyright and
    license information */
 /* eslint-env mocha,node */
+"use strict";
 
 import { assert } from "chai";
 import { setupPlatform } from "../TestPlatform.js";
@@ -8,6 +9,7 @@ import { CBOR } from "../../src/game/CBOR.js";
 import { Game } from "../../src/game/Game.js";
 const Square = Game.CLASSES.Square;
 const Turn = Game.CLASSES.Turn;
+const Tile = Game.CLASSES.Tile;
 const Player = Game.CLASSES.Player;
 
 /**
@@ -291,6 +293,199 @@ describe("game/Game", () => {
     .create()
     .then(game => {
       CBOR.encode(game, Game.CLASSES);
+    });
+  });
+
+  it("pack", () => {
+    const p = {
+      edition:"English_Scrabble",
+      dictionary:"Oxford_5000",
+      timerType: Game.Timer.GAME,
+      timeAllowed: 60,
+      timePenalty: 100,
+      predictScore: true,
+      allowTakeBack: true,
+      wordCheck: Game.WordCheck.AFTER,
+      challengePenalty: Game.Penalty.PER_WORD,
+      state: Game.State.WAITING,
+      minPlayers: 5,
+      maxPlayers: 10,
+      allowUndo: true
+    };
+
+    const robot1 = new Player({
+      name:"Robot", key:"robot1", isRobot: true}, Game.CLASSES);
+    assert.equal(Game.CLASSES, robot1._factory);
+    const human2 = new Player({
+      name:"Human", key:"human2", isRobot: false}, Game.CLASSES);
+
+    return new Game(p)
+    .create()
+    .then(g => {
+      g.addPlayer(robot1, true);
+      g.addPlayer(human2, true);
+      g.turns = [
+        new Turn({
+          score: -5,
+          type: Turn.Type.CHALLENGE_LOST,
+          gameKey: g.key,
+          playerKey: human2.key,
+          nextToGoKey: robot1.key,
+          challengerKey: robot1.key,
+          timestamp: g.creationTimestamp + 1
+        }),
+        new Turn({
+          score: 0,
+          type: Turn.Type.SWAPPED,
+          gameKey: g.key,
+          playerKey: robot1.key,
+          nextToGoKey: human2.key,
+          replacements: [
+            new Tile({ letter: "A", score: 1 }),
+            new Tile({ letter: "Q", score: 10 })
+          ],
+          timestamp: 1
+        })
+      ];
+
+      const s = g.pack();
+      //console.debug(s);
+
+      const p = {};
+      s.split(";").forEach(part => {
+        const bits = part.split("=");
+        if (bits.length === 1)
+          p[bits[0]] = true;
+        else
+          p[bits[0]] = decodeURIComponent(bits[1]);
+      });
+
+      assert.equal(p.b, '(225)'); // blank board
+      assert.equal(p.c, 3);
+      assert.equal(p.d, "Oxford_5000");
+      assert.equal(p.e, "English_Scrabble");
+      assert(p.g);
+      assert(p.i);
+      assert.equal(p.k.length, 16);
+      assert(p.m);
+      assert.equal(p.o, 5);
+      assert.equal(p.s, 0);
+      assert.equal(p.t, 2);
+      assert.equal(p.v, 1);
+      assert.equal(p.x, 60);
+      assert.equal(p.y, 100);
+
+      assert.equal(p.P0k, 'robot1');
+      assert.equal(p.P0n, 'Robot');
+      assert.equal(p.P0r, true);
+      assert.equal(p.P0s, 0);
+      assert.equal(p.P1k, 'human2');
+      assert.equal(p.P1n, 'Human');
+      assert.equal(p.P1s, 0);
+
+      assert(p.T0m);
+      assert.equal(p.T0n, robot1.key);
+      assert.equal(p.T0p, human2.key);
+      assert.equal(p.T0t, 3);
+      assert.equal(p.T0c, robot1.key);
+
+      assert(p.T1m);
+      assert.equal(p.T1n, human2.key);
+      assert.equal(p.T1p, robot1.key);
+      assert.equal(p.T1r, 'AQ');
+      assert.equal(p.T1t, 1);
+    });
+  });
+
+  it("unpack", () => {
+    const params = {
+      a:1,
+      b:"qUESTION(6)C--P(7)I--I(7)E--N(7)N--I(7)C--O(7)E--NO(10)M(36)",
+      c:3,
+      o:5,
+      d:"Oxford_5000",
+      e:"Test",
+      g:true,
+      i: true,
+      k:"30e820bbc5f4ef41",
+      m:1707125064802,
+      P0k:"robot1",
+      P0n:"Robot",
+      P0r:true,
+      P0R:"NTGTSVO-",
+      P0s:0,
+      P1k:"human2",
+      P1n:"Human",
+      P1R:"NEAGAEA-",
+      P1s:12,
+      T0c:"robot1",
+      T0m:1707125064803,
+      T0n:"robot1",
+      T0p:"human2",
+      T0t:3,
+      T1m:1,
+      T1n:"human2",
+      T1s:12,
+      T1p:"robot1",
+      T1r:"AQ",
+      T1t:1,
+      s:1,
+      t:2,
+      u:true,
+      v:1,
+      x:60,
+      y:100
+    };
+
+    return Game.unpack(params)
+    .then(game => {
+      //console.log(game);
+      assert.equal(game.challengePenalty, Game.Penalty.PER_WORD);
+      assert.equal(game.dictionary, "Oxford_5000");
+      assert.equal(game.edition, "Test");
+      assert(game.allowTakeBack);
+      assert(game.predictScore);
+      assert.equal(game.key, "30e820bbc5f4ef41");
+      assert.equal(game.creationTimestamp, 1707125064802);
+      assert.equal(game.penaltyPoints, 5);
+      assert.equal(game.state, Game.State.PLAYING);
+      assert.equal(game.timerType, Game.Timer.GAME);
+      assert.equal(game.wordCheck, Game.WordCheck.AFTER);
+      assert.equal(game.timeAllowed, 60);
+      assert.equal(game.timePenalty, 100);
+
+      // Test has 59 tiles initially
+      assert.equal(game.letterBag.tiles.length, 28);
+
+      const p0 = game.players[0];
+      assert.equal(p0.key, 'robot1');
+      assert.equal(p0.name, 'Robot');
+      assert.equal(p0.score, 0);
+      assert(p0.isRobot);
+
+      const p1 = game.players[1];
+      assert.equal(p1.key, 'human2');
+      assert.equal(p1.name, 'Human');
+      assert.equal(p1.score, 12);
+      assert(!p1.isRobot);
+
+      const t0 = game.turns[0];
+      assert.equal(t0.type, Turn.Type.CHALLENGE_LOST);
+      assert.equal(t0.timestamp, 1707125064803);
+      assert.equal(t0.nextToGoKey, 'robot1');
+      assert.equal(t0.playerKey, 'human2');
+      assert.equal(t0.challengerKey, 'robot1');
+
+      const t1 = game.turns[1];
+      assert.equal(t1.type, Turn.Type.SWAPPED);
+      assert.equal(t1.timestamp, 1);
+      assert.equal(t1.nextToGoKey, 'human2');
+      assert.equal(t1.playerKey, 'robot1');
+      assert.equal(t1.replacements[0].letter, "A");
+      assert.equal(t1.replacements[0].score, 1);
+      assert.equal(t1.replacements[1].letter, "Q");
+      assert.equal(t1.replacements[1].score, 4);
+      console.log(game.pack());
     });
   });
 });

@@ -14,6 +14,7 @@ import "./icon_button.js";
 import { stringify } from "../common/Utils.js";
 import { loadDictionary } from "../game/loadDictionary.js";
 import { Game } from "../game/Game.js";
+import { Turn } from "../game/Turn.js";
 import { UI } from "./UI.js";
 import { UIEvents } from "./UIEvents.js";
 
@@ -323,7 +324,7 @@ const GameUIMixin = superclass => class extends superclass {
     const challenger = (typeof turn.challengerKey === "string")
           ? this.game.getPlayerWithKey(turn.challengerKey) : undefined;
 
-    if (turn.type === Game.Turns.CHALLENGE_LOST) {
+    if (turn.type === Turn.Type.CHALLENGE_LOST) {
       challenger.score += turn.score;
       challenger.$refreshScore();
     } else {
@@ -350,8 +351,8 @@ const GameUIMixin = superclass => class extends superclass {
     const wasUs = (player === this.player);
 
     switch (turn.type) {
-    case Game.Turns.CHALLENGE_WON:
-    case Game.Turns.TOOK_BACK:
+    case Turn.Type.CHALLENGE_WON:
+    case Turn.Type.TOOK_BACK:
       if (wasUs)
         this.takeBackTiles();
 
@@ -367,7 +368,7 @@ const GameUIMixin = superclass => class extends superclass {
 
       // Was it us?
       if (wasUs) {
-        if (turn.type === Game.Turns.CHALLENGE_WON) {
+        if (turn.type === Turn.Type.CHALLENGE_WON) {
           if (this.getSetting("warnings"))
             this.playAudio("oops");
           this.notify(
@@ -378,7 +379,7 @@ const GameUIMixin = superclass => class extends superclass {
         }
       }
 
-      if (turn.type == Game.Turns.TOOK_BACK) {
+      if (turn.type == Turn.Type.TOOK_BACK) {
         this.notify(
           $.i18n("nfy-took-backH"),
           $.i18n("nfy-took-backB",
@@ -386,7 +387,7 @@ const GameUIMixin = superclass => class extends superclass {
       }
       break;
 
-    case Game.Turns.CHALLENGE_LOST:
+    case Turn.Type.CHALLENGE_LOST:
       if (this.getSetting("warnings"))
         this.playAudio("oops");
       if (challenger === this.player) {
@@ -400,7 +401,7 @@ const GameUIMixin = superclass => class extends superclass {
 
       break;
 
-    case Game.Turns.PLAYED:
+    case Turn.Type.PLAYED:
       if (wasUs)
         this.takeBackTiles();
       // Take the placed tiles out of the player's rack and
@@ -416,7 +417,7 @@ const GameUIMixin = superclass => class extends superclass {
         this.game.bagToRack(turn.replacements, player);
       break;
 
-    case Game.Turns.SWAPPED:
+    case Turn.Type.SWAPPED:
       if (wasUs)
         this.takeBackTiles();
       // If it was our swap, then the rack was cleared when the command
@@ -428,7 +429,7 @@ const GameUIMixin = superclass => class extends superclass {
 
       break;
 
-    case Game.Turns.GAME_ENDED:
+    case Turn.Type.GAME_ENDED:
       // End of game has been accepted
       if (wasUs)
         this.takeBackTiles();
@@ -457,9 +458,9 @@ const GameUIMixin = superclass => class extends superclass {
       this.enableTurnButton(false);
     }
 
-    if (turn.nextToGoKey && turn.type !== Game.Turns.CHALLENGE_WON) {
+    if (turn.nextToGoKey && turn.type !== Turn.Type.CHALLENGE_WON) {
 
-      if (turn.type == Game.Turns.PLAYED) {
+      if (turn.type == Turn.Type.PLAYED) {
         if (wasUs) {
           if (this.game.allowTakeBack) {
             this.addTakeBackPreviousButton(turn);
@@ -473,7 +474,7 @@ const GameUIMixin = superclass => class extends superclass {
       }
 
       if (this.isThisPlayer(turn.nextToGoKey)
-          && turn.type !== Game.Turns.TOOK_BACK) {
+          && turn.type !== Turn.Type.TOOK_BACK) {
         // It's our turn next, and we didn't just take back
         this.notify($.i18n("nfy-your-turnH"),
                     $.i18n("nfy-your-turnB",
@@ -688,7 +689,7 @@ const GameUIMixin = superclass => class extends superclass {
     case "!": // Challenge / take back
       {
         const lastTurn = this.game.lastTurn();
-        if (lastTurn && lastTurn.type == Game.Turns.PLAYED) {
+        if (lastTurn && lastTurn.type == Turn.Type.PLAYED) {
           if (this.isThisPlayer(this.game.whosTurnKey))
             // Challenge last move
             this.issueChallenge(lastTurn.playerKey);
@@ -934,8 +935,8 @@ const GameUIMixin = superclass => class extends superclass {
     this.updateGameStatus();
 
     const lastTurn = game.lastTurn();
-    if (lastTurn && (lastTurn.type === Game.Turns.PLAYED
-                     || lastTurn.type === Game.Turns.CHALLENGE_LOST)) {
+    if (lastTurn && (lastTurn.type === Turn.Type.PLAYED
+                     || lastTurn.type === Turn.Type.CHALLENGE_LOST)) {
       if (this.isThisPlayer(lastTurn.playerKey)) {
         // It isn't our turn, but we might still have time to
         // change our minds on the last move we made
@@ -1657,7 +1658,7 @@ const GameUIMixin = superclass => class extends superclass {
 
   /**
    * Handler for the 'Make Move' button. Invoked via 'click_actionButton'.
-   * Response will be turn type Game.Turns.PLAYED (or Game.Turns.TOOK_BACK if the play
+   * Response will be turn type Turn.Type.PLAYED (or Turn.Type.TOOK_BACK if the play
    * is rejected).
    * @memberof browser/GameUIMixin
    * @instance
@@ -1679,7 +1680,7 @@ const GameUIMixin = superclass => class extends superclass {
 
   /**
    * Handler for the 'Take back' button clicked. Invoked via
-   * 'click_actionButton'. Response will be a turn type Game.Turns.TOOK_BACK.
+   * 'click_actionButton'. Response will be a turn type Turn.Type.TOOK_BACK.
    * @memberof browser/GameUIMixin
    * @instance
    * @private

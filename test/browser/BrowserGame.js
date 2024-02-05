@@ -6,6 +6,7 @@ import { assert } from "chai";
 import { setupPlatform, setup$, setupI18n } from "../TestPlatform.js";
 
 import { BrowserGame } from "../../src/browser/BrowserGame.js";
+import { Turn as _Turn } from "../../src/game/Turn.js";
 const Player = BrowserGame.CLASSES.Player;
 const Tile = BrowserGame.CLASSES.Tile;
 const Turn = BrowserGame.CLASSES.Turn;
@@ -51,7 +52,7 @@ describe("browser/BrowserGame", () => {
 			game.whosTurnKey = human1.key;
       const ts = new Date("2000-04-01T01:02:03.04Z");
       game.turns.push(new Turn({
-        type: BrowserGame.Turns.PLAYED,
+        type: Turn.Type.PLAYED,
         timestamp: ts.getTime()
       }));
       game.creationTimestamp = 0;
@@ -189,7 +190,7 @@ describe("browser/BrowserGame", () => {
       // Tiles played and have replacements
       let turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.PLAYED,
+        type: Turn.Type.PLAYED,
         playerKey: p.THEM.key,
         placements: [ p.W, p.O, p.R, p.D ],
         replacements: [ p.W, p.O, p.R, p.D ],
@@ -220,7 +221,7 @@ describe("browser/BrowserGame", () => {
       // Tiles played and have replacements
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.PLAYED,
+        type: Turn.Type.PLAYED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
         replacements: [ p.W, p.O, p.R, p.D ],
@@ -250,7 +251,7 @@ describe("browser/BrowserGame", () => {
       // Tiles played and have replacements
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.PLAYED,
+        type: Turn.Type.PLAYED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
         replacements: [],
@@ -272,7 +273,7 @@ describe("browser/BrowserGame", () => {
       // Tiles played but no replacements
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.PLAYED,
+        type: Turn.Type.PLAYED,
         playerKey: p.THEM.key,
         placements: [ p.W, p.O, p.R, p.D ],
         replacements: [],
@@ -321,7 +322,7 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.CHALLENGE_LOST,
+        type: Turn.Type.CHALLENGE_LOST,
         playerKey: p.THEM.key,
         challengerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -356,7 +357,7 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.CHALLENGE_LOST,
+        type: Turn.Type.CHALLENGE_LOST,
         playerKey: p.YOU.key,
         challengerKey: p.THEM.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -380,7 +381,7 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.CHALLENGE_WON,
+        type: Turn.Type.CHALLENGE_WON,
         playerKey: p.THEM.key,
         challengerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -404,7 +405,7 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.SWAPPED,
+        type: Turn.Type.SWAPPED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
         replacements: [ p.W, p.O, p.R, p.D ],
@@ -437,7 +438,7 @@ describe("browser/BrowserGame", () => {
       ];
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.GAME_ENDED,
+        type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore
       });
@@ -471,7 +472,7 @@ describe("browser/BrowserGame", () => {
       ];
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.GAME_ENDED,
+        type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore
       });
@@ -511,7 +512,7 @@ describe("browser/BrowserGame", () => {
       ];
       const turn = new Turn({
         gameKey: p.game.key,
-        type: BrowserGame.Turns.GAME_ENDED,
+        type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore
       });

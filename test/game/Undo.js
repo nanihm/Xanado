@@ -161,7 +161,7 @@ describe("game/Undo", () => {
     })
     .then(() => game.connect(socket, human1.key))
     .then(() => prepass = CBOR.decode(CBOR.encode(game, Game.CLASSES), Game.CLASSES))
-    .then(() => game.pass(human1, Game.Turns.PASSED))
+    .then(() => game.pass(human1, Turn.Type.PASSED))
     .then(() => game.undo(game.popTurn()))
     .then(() => socket.wait())
     .then(() => {
@@ -258,10 +258,10 @@ describe("game/Undo", () => {
     .on(Game.Notify.TURN, (turn, event, seqNo) => {
       switch (seqNo) {
       case 1:
-        assert.equal(turn.type, Game.Turns.PLAYED);
+        assert.equal(turn.type, Turn.Type.PLAYED);
         break;
       case 2:
-        assert.equal(turn.type, Game.Turns.TOOK_BACK);
+        assert.equal(turn.type, Turn.Type.TOOK_BACK);
         break;
       default:
         assert.fail(`UNEXPECTED ${event} ${seqNo} ${stringify(turn)}`);
@@ -289,7 +289,7 @@ describe("game/Undo", () => {
     .then(() => preplay = CBOR.decode(CBOR.encode(game, Game.CLASSES), Game.CLASSES))
     .then(() => game.play(human1, move))
     .then(() => pretakeback = CBOR.decode(CBOR.encode(game, Game.CLASSES), Game.CLASSES))
-    .then(() => game.takeBack(human1, Game.Turns.TOOK_BACK))
+    .then(() => game.takeBack(human1, Turn.Type.TOOK_BACK))
     .then(() => posttakeback = CBOR.decode(CBOR.encode(game, Game.CLASSES), Game.CLASSES))
     .then(() => assertGameEqual(posttakeback, preplay, true))
     .then(() => game.undo(game.popTurn()))

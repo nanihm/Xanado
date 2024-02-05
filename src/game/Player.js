@@ -140,7 +140,8 @@ class Player {
    * state. This is used for sending minimal player information to
    * the `games` interface using JSON.
    * @param {Game} game the game the player is participating in
-   * @param {UserManager?} um user manager for getting emails if wanted
+   * @param {UserManager?} um user manager for getting emails if wanted.
+   * Only works server-side.
    * @return {Promise} resolving to a simple structure describing
    * the player
    */
@@ -166,6 +167,40 @@ class Player {
 
       return simple;
     });
+  }
+
+  /**
+   * Encode the player in a URI parameter block
+   * @return {string} parameter string for embedding in a URL to recreate
+   * the player.
+   */
+  pack() {
+    const params = {};
+    if (this.dictionary) params.d = this.dictionary;
+    params.k = this.key;
+    if (this.missNextTurn) params.m = true;
+    params.n = this.name;
+    if (this.isRobot) params.r = true;
+    params.R = this.rack.pack();
+    params.s = this.score;
+    return params;
+  }
+
+  /**
+   * Unpack a parameter block created by pack().
+   * @param {Object} params parameter block
+   * @param {number} index index of this player in the parameter block
+   * @param {Edition} edition edition, used to get letter scores for
+   * tiles.
+   */
+  unpack(params, index, edition) {
+    if (params[`P${index}d`]) this.dictionary = params[`P${index}d`];
+    this.key = params[`P${index}k`];
+    if (params[`P${index}m`]) this.missNextTurn = true;
+    this.name = params[`P${index}n`];
+    if (params[`P${index}r`]) this.isRobot = true;
+    this.score = Number(params[`P${index}s`]);
+    this.rack.unpack(params[`P${index}R`], edition);
   }
 
   /**

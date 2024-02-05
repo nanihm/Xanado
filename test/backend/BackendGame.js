@@ -14,8 +14,10 @@ Game.USE_WORKERS = true;
 
 import { BackendGame } from "../../src/backend/BackendGame.js";
 import { FileDatabase } from "../../src/server/FileDatabase.js";
+import { Turn as _Turn } from "../../src/game/Turn.js";
 const Player = BackendGame.CLASSES.Player;
 const Move = BackendGame.CLASSES.Move;
+const Turn = BackendGame.CLASSES.Turn;
 const Tile = BackendGame.CLASSES.Tile;
 
 /**
@@ -53,7 +55,7 @@ describe("backend/BackendGame", () => {
       BackendGame.Notify.TURN,
 		  (data) => {
 			  sparseEqual(data, {
-					  type: BackendGame.Turns.PLAYED,
+					  type: Turn.Type.PLAYED,
 					  playerKey: human1.key,
 					  nextToGoKey: human2.key,
 					  score: move.score,
@@ -113,7 +115,7 @@ describe("backend/BackendGame", () => {
 		socket.on(BackendGame.Notify.CONNECTIONS, () => {});
 		socket.on("*", (data, event) => {
 			if (event === BackendGame.Notify.TURN) {
-				assert.equal(data.type, BackendGame.Turns.PASSED);
+				assert.equal(data.type, Turn.Type.PASSED);
 				socket.done();
 				return;
 			}
@@ -133,7 +135,7 @@ describe("backend/BackendGame", () => {
 			assert.equal(game.whosTurnKey, human1.key);
 			assert(human2.missNextTurn);
 		})
-		.then(() => game.pass(human1, BackendGame.Turns.PASSED))
+		.then(() => game.pass(human1, Turn.Type.PASSED))
 		.then(() => {
 			assert.equal(game.whosTurnKey, human3.key);
 			assert(!human3.missNextTurn);
@@ -203,7 +205,7 @@ describe("backend/BackendGame", () => {
       game.onLoad(new MemoryDatabase());
       //game._debug = console.debug;
 			const human = game.getPlayerWithKey("human");
-			return game.pass(human, BackendGame.Turns.PASSED);
+			return game.pass(human, Turn.Type.PASSED);
 		});
 	});
 
@@ -363,17 +365,17 @@ describe("backend/BackendGame", () => {
     .then(() => {
       game.turns = [];
       //game._debug = console.debug;
-      game.finishTurn(players[0], { type: BackendGame.Turns.PLAYED });
-      game.finishTurn(players[1], { type: BackendGame.Turns.PLAYED });
-      game.finishTurn(players[2], { type: BackendGame.Turns.TOOK_BACK });
+      game.finishTurn(players[0], { type: Turn.Type.PLAYED });
+      game.finishTurn(players[1], { type: Turn.Type.PLAYED });
+      game.finishTurn(players[2], { type: Turn.Type.TOOK_BACK });
       assert.equal(game.lastTurn().playerKey, 2);
-      game.finishTurn(players[3], { type: BackendGame.Turns.PLAYED });
-      game.finishTurn(players[4], { type: BackendGame.Turns.CHALLENGE_WON });
+      game.finishTurn(players[3], { type: Turn.Type.PLAYED });
+      game.finishTurn(players[4], { type: Turn.Type.CHALLENGE_WON });
       assert.equal(game.lastTurn().playerKey, 4);
-      game.finishTurn(players[5], { type: BackendGame.Turns.PLAYED });
-      game.finishTurn(players[6], { type: BackendGame.Turns.CHALLENGE_LOST });
+      game.finishTurn(players[5], { type: Turn.Type.PLAYED });
+      game.finishTurn(players[6], { type: Turn.Type.CHALLENGE_LOST });
       assert.equal(game.lastTurn().playerKey, 6);
-      game.finishTurn(players[7], { type: BackendGame.Turns.GAME_ENDED });
+      game.finishTurn(players[7], { type: Turn.Type.GAME_ENDED });
       game.state = BackendGame.State.GAME_OVER;
       assert.equal(game.lastTurn().playerKey, 7);
 

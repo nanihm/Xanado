@@ -6,6 +6,7 @@
 
 import { genKey, stringify } from "../common/Utils.js";
 import { Game } from "./Game.js";
+import { Turn } from "./Turn.js";
 
 /**
  * Mixin to {@linkcode Game} that provides handlers for game
@@ -130,7 +131,7 @@ const Commands = superclass => class extends superclass {
     const nextPlayer = this.nextPlayer();
     this.whosTurnKey = nextPlayer.key;
     return this.finishTurn(player, {
-      type: Game.Turns.PLAYED,
+      type: Turn.Type.PLAYED,
       nextToGoKey: nextPlayer.key,
       score: move.score,
       placements: move.placements,
@@ -270,7 +271,7 @@ const Commands = superclass => class extends superclass {
     }
     const factory = this.constructor.CLASSES;
     return this.finishTurn(player, new factory.Turn({
-      type: Game.Turns.GAME_ENDED,
+      type: Turn.Type.GAME_ENDED,
       endState: endState,
       score: Object.keys(deltas).map(k => deltas[k])
     }));
@@ -282,17 +283,17 @@ const Commands = superclass => class extends superclass {
    * @function
    * @instance
    * @memberof game/Commands
-   * @param {Player} player if type==Game.Turns.CHALLENGE_WON this must be
+   * @param {Player} player if type==Turn.Type.CHALLENGE_WON this must be
    * the challenging player. Otherwise it is the player taking their
    * play back.
-   * @param {string} type the type of the takeBack; Game.Turns.TOOK_BACK
-   * or Game.Turns.CHALLENGE_WON.
+   * @param {string} type the type of the takeBack; Turn.Type.TOOK_BACK
+   * or Turn.Type.CHALLENGE_WON.
    * @return {Promise} Promise resolving to the game
    */
   takeBack(player, type) {
     const previousMove = this.lastTurn();
     assert(previousMove, "No previous move to take back");
-    assert(previousMove.type == Game.Turns.PLAYED,
+    assert(previousMove.type == Turn.Type.PLAYED,
            `Cannot challenge a ${previousMove.type}`);
 
     const prevPlayer = this.getPlayerWithKey(previousMove.playerKey);
@@ -309,19 +310,19 @@ const Commands = superclass => class extends superclass {
 
     const turn = {
       type: type,
-      nextToGoKey: type === Game.Turns.CHALLENGE_WON
+      nextToGoKey: type === Turn.Type.CHALLENGE_WON
       ? this.whosTurnKey : player.key,
       score: -previousMove.score,
       placements: previousMove.placements,
       replacements: previousMove.replacements
     };
 
-    if (type === Game.Turns.CHALLENGE_WON)
+    if (type === Turn.Type.CHALLENGE_WON)
       turn.challengerKey = player.key;
 
     return this.finishTurn(prevPlayer, turn)
     .then(() => {
-      if (type === Game.Turns.TOOK_BACK) {
+      if (type === Turn.Type.TOOK_BACK) {
         // Let the taking-back player go again,
         // but with just the remaining time from their move.
         return this.startTurn(player, previousMove.remainingTime);
@@ -341,8 +342,8 @@ const Commands = superclass => class extends superclass {
    * @instance
    * @memberof game/Commands
    * @param {Player} player player passing (must be current player)
-   * @param {string} type pass type, `Game.Turns.PASSED` or
-   * `Game.Turns.TIMED_OUT`. If undefined, defaults to `Game.Turns.PASSED`
+   * @param {string} type pass type, `Turn.Type.PASSED` or
+   * `Turn.Type.TIMED_OUT`. If undefined, defaults to `Turn.Type.PASSED`
    * @return {Promise} resolving to the game
    */
   pass(player, type) {
@@ -354,7 +355,7 @@ const Commands = superclass => class extends superclass {
     const nextPlayer = this.nextPlayer();
 
     return this.finishTurn(player, {
-      type: type || Game.Turns.PASSED,
+      type: type || Turn.Type.PASSED,
       nextToGoKey: nextPlayer.key
     })
     .then(() => this.startTurn(nextPlayer));
@@ -379,7 +380,7 @@ const Commands = superclass => class extends superclass {
 
     let previousMove = this.lastTurn();
 
-    assert(previousMove.type === Game.Turns.PLAYED,
+    assert(previousMove.type === Turn.Type.PLAYED,
            `Cannot challenge a ${previousMove.type}`);
     assert(challenged.key === previousMove.playerKey,
            "Last player challenge mismatch");
@@ -390,7 +391,7 @@ const Commands = superclass => class extends superclass {
       () => {
         if (this._debug)
           this._debug("No dictionary, so challenge always succeeds");
-        return this.takeBack(challenger, Game.Turns.CHALLENGE_WON);
+        return this.takeBack(challenger, Turn.Type.CHALLENGE_WON);
       })
     /* c8 ignore stop */
     .then(dict => {
@@ -407,7 +408,7 @@ const Commands = superclass => class extends superclass {
         // whether the challenger is the current player or
         // not, takeBack should leave the next player
         // after the challenged player with the turn.
-        return this.takeBack(challenger, Game.Turns.CHALLENGE_WON);
+        return this.takeBack(challenger, Turn.Type.CHALLENGE_WON);
       }
 
       /* c8 ignore next 2 */
@@ -433,13 +434,13 @@ const Commands = superclass => class extends superclass {
             && challenged.rack.isEmpty())
           return this.confirmGameOver(
             this.getPlayer(), Game.State.FAILED_CHALLENGE);
-        // Otherwise issue turn type=Game.Turns.CHALLENGE_LOST
+        // Otherwise issue turn type=Turn.Type.CHALLENGE_LOST
 
         // Penalty for a failed challenge is miss a turn,
         // and the challenger is the current player, so their
         // turn is at an end.
         return this.finishTurn(challenged, {
-          type: Game.Turns.CHALLENGE_LOST,
+          type: Turn.Type.CHALLENGE_LOST,
           penalty: Game.Penalty.MISS,
           challengerKey: challenger.key,
           nextToGoKey: nextPlayer.key
@@ -465,7 +466,7 @@ const Commands = superclass => class extends superclass {
 
       challenger.score += lostPoints;
       return this.finishTurn(challenged, {
-        type: Game.Turns.CHALLENGE_LOST,
+        type: Turn.Type.CHALLENGE_LOST,
         score: lostPoints,
         challengerKey: challenger.key,
         nextToGoKey: currPlayerKey
@@ -515,7 +516,7 @@ const Commands = superclass => class extends superclass {
     const nextPlayer = this.nextPlayer();
 
     return this.finishTurn(player, {
-      type: Game.Turns.SWAPPED,
+      type: Turn.Type.SWAPPED,
       nextToGoKey: nextPlayer.key,
       placements: tiles, // the tiles that were swapped out
       replacements: replacements // the tiles that are replacing them
@@ -807,7 +808,7 @@ const Commands = superclass => class extends superclass {
         return this.confirmGameOver(player, Game.State.GAME_OVER);
 
         case Game.Command.PASS:
-          return this.pass(player, Game.Turns.PASSED);
+          return this.pass(player, Turn.Type.PASSED);
 
         case Game.Command.PAUSE:
           return this.pause(player);
@@ -822,7 +823,7 @@ const Commands = superclass => class extends superclass {
           return this.swap(player, args);
 
         case Game.Command.TAKE_BACK:
-          return this.takeBack(player, Game.Turns.TOOK_BACK);
+          return this.takeBack(player, Turn.Type.TOOK_BACK);
 
         case Game.Command.UNDO:
           this.undo(this.popTurn());
