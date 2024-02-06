@@ -264,7 +264,7 @@ describe("client/ClientGamesUI", () => {
         getTestGame("unfinished_game", Game),
         getTestGame("good_game", Game)
       ])
-      .then(games => Promise.all(games.map(game => game.serialisable())))
+      .then(games => Promise.all(games.map(game => game.jsonable())))
 
     });
 

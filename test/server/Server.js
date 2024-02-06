@@ -310,7 +310,6 @@ describe("server/Server.js", () => {
     .on(Game.Notify.TURN, (turn) => {
       //console.log("INCOMING turn");
       assert.equal(turn.playerKey, UserManager.ROBOT_KEY);
-      assert.equal(turn.gameKey, gamekey);
     })
     .on(Game.Notify.CONNECTIONS, () => {})
     .on("*", (params, event) => {

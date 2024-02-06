@@ -320,7 +320,7 @@ class ClientGamesUI extends ClientUIMixin(GamesUIMixin(UI)) {
 
     if (this.session && this.getSetting("canEmail") && simples.length > 0) {
       const games = simples.map(simple =>
-                                Game.fromSerialisable(simple, Game.CLASSES));
+                                Game.fromJsonable(simple, Game.CLASSES));
       if (games.reduce((em, game) => {
         // game is Game.simple, not a Game object
         // Can't remind a game that hasn't started or has ended.

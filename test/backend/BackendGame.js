@@ -165,9 +165,11 @@ describe("backend/BackendGame", () => {
 		});
 		const socket1 = new TestSocket();
 		socket1.on(BackendGame.Notify.REJECT, (data) => {
+      delete data._timestamp;
 			assert.deepEqual(data, {
 				playerKey: human1.key,
-				words: [ "XYZ" ] });
+				words: [ "XYZ" ]
+      });
 			socket1.done();
 		});
 		socket1.on(BackendGame.Notify.CONNECTIONS, () => {});
@@ -288,12 +290,12 @@ describe("backend/BackendGame", () => {
       reload._debug = game._debug;
       delete(game.nextGameKey);
 
-      return Promise.all([reload.serialisable(), game.serialisable()])
+      return Promise.all([reload.jsonable(), game.jsonable()])
       .then(s => assert.deepEqual(s[0], s[1]));
     })
     .then(() => reload.playIfReady()) // should start the clock
     .then(() => assert(reload.stopTheClock()))
-    .then(() => Promise.all([reload.serialisable(), game.serialisable()]))
+    .then(() => Promise.all([reload.jsonable(), game.jsonable()]))
     .then(s => assert.deepEqual(s[0], s[1]));
 	});
 

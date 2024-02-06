@@ -209,7 +209,7 @@ const GameUIMixin = superclass => class extends superclass {
    * @param {string} message.text i18n message identifier or plain text
    * @param {string} message.classes additional css classes to apply to
    * message
-   * @param {object[]} args i18n arguments
+   * @param {object[]} message.args i18n arguments
    * @private
    */
   handle_MESSAGE(message) {
@@ -252,9 +252,9 @@ const GameUIMixin = superclass => class extends superclass {
    * @memberof browser/GameUIMixin
    * @instance
    * @param {object} params Parameters
-   * @param {string} gameKey game key
-   * @param {string} playerKey player key
-   * @param {string} clock seconds left for this player to play
+   * @param {Key} params.gameKey game key
+   * @param {Key} params.playerKey player key
+   * @param {number} params.clock seconds left for this player to play
    * @private
    */
   handle_TICK(params) {
@@ -309,12 +309,13 @@ const GameUIMixin = superclass => class extends superclass {
    * modified the game state.
    * @memberof browser/GameUIMixin
    * @instance
-   * @param {Turn} turn a Turn object
+   * @param {object} params Turn constructor parameters
    * @private
    */
-  handle_TURN(turn) {
-    this.debug("f<b turn ", turn);
+  handle_TURN(params) {
+    const turn = new this.game.constructor.CLASSES.Turn(params);
 
+    this.debug("f<b turn ", turn);
     this.game.pushTurn(turn);
 
     $("#undoButton").toggle(this.game.allowUndo === true);
@@ -542,16 +543,16 @@ const GameUIMixin = superclass => class extends superclass {
    * @memberof browser/GameUIMixin
    * @instance
    * @param {object} params Parameters
-   * @param {string} params.key game key
-   * @param {string} params.name name of player who paused/released
+   * @param {Key} params.gameKey game key
+   * @param {string} params.playerName name of player who paused/released
    * @private
    */
   handle_PAUSE(params) {
-    this.debug(`f<b pause ${params.name}`);
+    this.debug(`f<b pause ${params.playerName}`);
     $(".Surface .letter").hide();
     $(".Surface .score").hide();
     $("#pauseDialog > .banner")
-    .text($.i18n("game-paused", params.name));
+    .text($.i18n("game-paused", params.playerName));
     $("#pauseDialog")
     .dialog({
       dialogClass: "no-close",
@@ -574,12 +575,12 @@ const GameUIMixin = superclass => class extends superclass {
    * @memberof browser/GameUIMixin
    * @instance
    * @param {object} params Parameters
-   * @param {string} params.key game key
-   * @param {string} params.name name of player who paused/released
+   * @param {Key} params.gameKey game key
+   * @param {string} params.playerName name of player who paused/released
    * @private
    */
   handle_UNPAUSE(params) {
-    this.debug(`f<b unpause ${params.name}`);
+    this.debug(`f<b unpause ${params.playerName}`);
     $(".Surface .letter").show();
     $(".Surface .score").show();
     $("#pauseDialog")
@@ -1016,8 +1017,7 @@ const GameUIMixin = superclass => class extends superclass {
 
     // A turn has been taken. turn is a Turn
     .on(Game.Notify.TURN,
-        turn => this.handle_TURN(
-          new this.game.constructor.CLASSES.Turn(turn)))
+        params => this.handle_TURN(params))
 
     // Backend clock tick.
     .on(Game.Notify.TICK,

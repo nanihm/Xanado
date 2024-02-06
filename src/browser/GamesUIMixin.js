@@ -269,7 +269,7 @@ const GamesUIMixin = superclass => class extends superclass {
     $gt.empty();
 
     const games = simples.map(
-      simple => BrowserGame.fromSerialisable(simple, BrowserGame.CLASSES))
+      simple => BrowserGame.fromJsonable(simple, BrowserGame.CLASSES))
           .sort((a, b) => a.creationTimestamp < b.creationTimestamp ? -1 :
                 a.creationTimestamp > b.creationTimestamp ? 1 : 0);
 
@@ -307,7 +307,7 @@ const GamesUIMixin = superclass => class extends superclass {
     .then(g => {
       return (g instanceof BrowserGame)
       ? g
-      : BrowserGame.fromSerialisable(g, BrowserGame.CLASSES);
+      : BrowserGame.fromJsonable(g, BrowserGame.CLASSES);
     })
     .then(game => this.showGame(game))
     .catch(e => this.alert(e));

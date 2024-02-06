@@ -37,7 +37,7 @@ describe("game/Player", () => {
     assert.isFalse(player.missNextTurn);
   });
 
-  it("valueOf, toString, and serialisable", () => {
+  it("valueOf, toString, and jsonable", () => {
     const p = {
       name: "Player 1",
       key: "playerkey",
@@ -51,7 +51,7 @@ describe("game/Player", () => {
     player.isRobot = true;
     player.score = 20;
 
-    return player.serialisable()
+    return player.jsonable()
     .then(d => {
       assert.deepEqual(d, {
         name: 'Player 1',
@@ -60,7 +60,7 @@ describe("game/Player", () => {
         key: 'playerkey',
         score: 20
       });
-      const pp = Player.fromSerialisable(d, Game.CLASSES);
+      const pp = Player.fromJsonable(d, Game.CLASSES);
       pp._debug = player._debug;
       delete player.rack;
       delete pp.rack;

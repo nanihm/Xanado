@@ -116,7 +116,7 @@ class StandaloneGamesUI extends StandaloneUIMixin(GamesUIMixin(UI)) {
     .then(games => Promise.all(games.map(game => game.onLoad(this.db))))
     .then(games => Promise.all(
       games
-      .map(game => game.serialisable(this.userManager))))
+      .map(game => game.jsonable(this.userManager))))
     // Sort the resulting list by last activity, so the most
     // recently active game bubbles to the top
     .catch(e => this.alert(e))

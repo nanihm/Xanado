@@ -159,9 +159,8 @@ const Commands = superclass => class extends superclass {
     if (this._debug)
       this._debug(`${this.pausedBy} has paused game`);
     this.notifyAll(Game.Notify.PAUSE, {
-      key: this.key,
-      name: player.name,
-      timestamp: Date.now()
+      gameKey: this.key,
+      playerName: player.name
     });
     return this.save();
   }
@@ -182,9 +181,8 @@ const Commands = superclass => class extends superclass {
     if (this._debug)
       this._debug(`${player.name} has unpaused game`);
     this.notifyAll(Game.Notify.UNPAUSE, {
-      key: this.key,
-      name: player.name,
-      timestamp: Date.now()
+      gameKey: this.key,
+      playerName: player.name
     });
     this.pausedBy = undefined;
     this.startTheClock();
@@ -574,8 +572,7 @@ const Commands = superclass => class extends superclass {
     .then(() => newGame.save())
     .then(() => newGame.playIfReady())
     .then(() => this.notifyAll(Game.Notify.NEXT_GAME, {
-      gameKey: newGame.key,
-      timestamp: Date.now()
+      gameKey: newGame.key
     }))
     .then(() => newGame);
   }
@@ -603,8 +600,7 @@ const Commands = superclass => class extends superclass {
         sender: /*i18n*/"Advisor",
         text: /*i18n*/"advised",
         classes: "warning",
-        args: [ player.name ],
-        timestamp: Date.now()
+        args: [ player.name ]
       });
   }
 
@@ -652,19 +648,16 @@ const Commands = superclass => class extends superclass {
         this._debug(`Better play found for ${player.name}`);
         const start = bestPlay.placements[0];
         const words = bestPlay.words.map(w => w.word).join(",");
-        const advice = {
+        this.notifyPlayer(player, Game.Notify.MESSAGE, {
           sender: /*i18n*/"Advisor",
           text: /*i18n*/"possible-score",
-          args: [  words, start.row + 1, start.col + 1,
-                   bestPlay.score ]
-        };
-        this.notifyPlayer(player, Game.Notify.MESSAGE, advice);
+          args: [ words, start.row + 1, start.col + 1, bestPlay.score ]
+        });
         this.notifyOthers(player, Game.Notify.MESSAGE, {
           sender: /*i18n*/"Advisor",
           text: /*i18n*/"was-advised",
           classes: "warning",
-          args: [ player.name ],
-          timestamp: Date.now()
+          args: [ player.name ]
         });
       /* c8 ignore next 2 */
       } else if (this._debug)
@@ -731,8 +724,7 @@ const Commands = superclass => class extends superclass {
         sender: /*i18n*/"Advisor",
         text: /*i18n*/"hinted",
         classes: "warning",
-        args: [ player.name ],
-        timestamp: Date.now()
+        args: [ player.name ]
       });
     })
     /* c8 ignore start */
@@ -741,8 +733,7 @@ const Commands = superclass => class extends superclass {
         this._debug("Error:", e);
       this.notifyAll(Game.Notify.MESSAGE, {
         sender: /*i18n*/"Advisor",
-        text: e.toString(),
-        timestamp: Date.now()
+        text: e.toString()
       });
     });
     /* c8 ignore stop */

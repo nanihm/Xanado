@@ -189,7 +189,6 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       // Tiles played and have replacements
       let turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.PLAYED,
         playerKey: p.THEM.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -220,7 +219,6 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       // Tiles played and have replacements
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.PLAYED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -250,7 +248,6 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       // Tiles played and have replacements
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.PLAYED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -272,7 +269,6 @@ describe("browser/BrowserGame", () => {
 		.then(p => {
       // Tiles played but no replacements
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.PLAYED,
         playerKey: p.THEM.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -321,7 +317,6 @@ describe("browser/BrowserGame", () => {
     return make_p()
 		.then(p => {
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.CHALLENGE_LOST,
         playerKey: p.THEM.key,
         challengerKey: p.YOU.key,
@@ -356,7 +351,6 @@ describe("browser/BrowserGame", () => {
     return make_p()
 		.then(p => {
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.CHALLENGE_LOST,
         playerKey: p.YOU.key,
         challengerKey: p.THEM.key,
@@ -380,7 +374,6 @@ describe("browser/BrowserGame", () => {
     return make_p()
 		.then(p => {
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.CHALLENGE_WON,
         playerKey: p.THEM.key,
         challengerKey: p.YOU.key,
@@ -404,7 +397,6 @@ describe("browser/BrowserGame", () => {
     return make_p()
 		.then(p => {
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.SWAPPED,
         playerKey: p.YOU.key,
         placements: [ p.W, p.O, p.R, p.D ],
@@ -437,7 +429,6 @@ describe("browser/BrowserGame", () => {
         { key: p.THEM.key, tiles: -10, tilesRemaining: "Q", time: 0}
       ];
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore
@@ -471,7 +462,6 @@ describe("browser/BrowserGame", () => {
         { key: p.THEM.key, tiles: 10, time: 0}
       ];
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore
@@ -511,7 +501,6 @@ describe("browser/BrowserGame", () => {
         { key: p.THEM.key, tiles: -7, tilesRemaining: "Q", time: -10}
       ];
       const turn = new Turn({
-        gameKey: p.game.key,
         type: Turn.Type.GAME_ENDED,
         playerKey: p.YOU.key,
         score: endScore

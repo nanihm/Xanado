@@ -20,7 +20,7 @@ describe("game/Game", () => {
 
   before(setupPlatform);
 
-  it("construct, serialisable, fromSimple", () => {
+  it("construct, jsonable, fromSimple", () => {
     const p = {
       edition:"English_Scrabble",
       dictionary:"Oxford_5000",
@@ -50,7 +50,7 @@ describe("game/Game", () => {
       assert.equal(game.minPlayers, 5);
       assert.equal(game.maxPlayers, 10);
       assert.equal(game.state, Game.State.WAITING);
-      return game.serialisable();
+      return game.jsonable();
     })
     .then(s => {
       assert.equal(s.key, game.key);
@@ -73,7 +73,7 @@ describe("game/Game", () => {
       assert.equal(s.nextGameKey, game.nextGameKey);
       assert.equal(s.lastActivity, game.lastActivity());
       assert.equal(s.players.length, 0);
-      game = Game.fromSerialisable(s, Game.CLASSES);
+      game = Game.fromJsonable(s, Game.CLASSES);
       assert.equal(s.key, game.key);
       assert.equal(s.creationTimestamp, game.creationTimestamp);
       assert.equal(s.edition, game.edition);
@@ -181,7 +181,7 @@ describe("game/Game", () => {
       assert.equal(game.calculateBonus(6), 0);
       assert.equal(game.calculateBonus(7), 50);
       assert.equal(game.getWinner(), human4);
-      return game.serialisable(um);
+      return game.jsonable(um);
     })
     .then(s => {
       assert.equal(s.key, game.key);
@@ -205,9 +205,9 @@ describe("game/Game", () => {
       assert.equal(s.lastActivity, game.lastActivity());
       assert.equal(s.players.length, 4);
       return Promise.all([
-        robot1.serialisable(game, um),
-        human2.serialisable(game, um),
-        human3.serialisable(game, um)
+        robot1.jsonable(game, um),
+        human2.jsonable(game, um),
+        human3.jsonable(game, um)
       ])
       .then(ps => {
         assert.deepEqual(s.players[0], ps[0]);
@@ -242,16 +242,14 @@ describe("game/Game", () => {
       game.turns = [
         new Turn({
           score: 0,
-          type: "swap",
-          gameKey: "e6c65400618fd8aa",
+          type: Turn.Type.SWAPPED,
           playerKey: "2v5oyt5qpi",
           nextToGoKey: "49dabe7iua",
-          timestamp: 1
+          timestamp: game.creationTimestamp
         }),
         new Turn({
           score: -5,
-          type: "challenge-lost",
-          gameKey: "e6c65400618fd8aa",
+          type: Turn.Type.CHALLENGE_LOST,
           playerKey: "49dabe7iua",
           nextToGoKey: "2v5oyt5qpi",
           challengerKey: "2v5oyt5qpi",
@@ -268,7 +266,7 @@ describe("game/Game", () => {
 
       assert(game.at(0, 0) instanceof Square);
 
-      return game.serialisable();
+      return game.jsonable();
     })
     .then(s => {
       assert.equal(s.turns.length, 2);
@@ -328,23 +326,21 @@ describe("game/Game", () => {
         new Turn({
           score: -5,
           type: Turn.Type.CHALLENGE_LOST,
-          gameKey: g.key,
           playerKey: human2.key,
           nextToGoKey: robot1.key,
           challengerKey: robot1.key,
-          timestamp: g.creationTimestamp + 1
+          timestamp: g.creationTimestamp
         }),
         new Turn({
           score: 0,
           type: Turn.Type.SWAPPED,
-          gameKey: g.key,
           playerKey: robot1.key,
           nextToGoKey: human2.key,
           replacements: [
             new Tile({ letter: "A", score: 1 }),
             new Tile({ letter: "Q", score: 10 })
           ],
-          timestamp: 1
+          timestamp: g.creationTimestamp + 1
         })
       ];
 
@@ -406,7 +402,7 @@ describe("game/Game", () => {
       d:"Oxford_5000",
       e:"Test",
       g:true,
-      i: true,
+      i:true,
       k:"30e820bbc5f4ef41",
       m:1707125064802,
       P0k:"robot1",

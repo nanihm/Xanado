@@ -47,28 +47,24 @@ describe("game/TimedGame", function() {
         assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 4:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 6:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 8:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.TIMED_OUT);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 9:
         assert.deepEqual(turn.score, [
@@ -77,7 +73,6 @@ describe("game/TimedGame", function() {
         ]);
         assert.equal(turn.type, Turn.Type.GAME_ENDED);
         assert.equal(turn.endState, Game.State.TWO_PASSES);
-        assert.equal(turn.gameKey, game.key);
         assert(!turn.nextToGoKey);
         socket.done();
         break;
@@ -133,28 +128,24 @@ describe("game/TimedGame", function() {
         assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 3:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 5:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human1.key);
         assert.equal(turn.nextToGoKey, human2.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 6:
         assert.equal(turn.score, 0);
         assert.equal(turn.type, Turn.Type.PASSED);
         assert.equal(turn.playerKey, human2.key);
         assert.equal(turn.nextToGoKey, human1.key);
-        assert.equal(turn.gameKey, game.key);
         break;
       case 7:
         assert.equal(turn.type, Turn.Type.GAME_ENDED);
@@ -166,7 +157,6 @@ describe("game/TimedGame", function() {
         assert.equal(turn.score[0].time, -1);
         // human2 has no time penalty
         assert(!turn.score[1].time);
-        assert.equal(turn.gameKey, game.key);
         assert(!turn.nextToGoKey);
         socket.done();
         break;
