@@ -1511,10 +1511,9 @@ const GameUIMixin = superclass => class extends superclass {
       return;
     }
 
-    // If the last player's rack is empty, it couldn't be refilled
-    // and the game might be over.
-    const lastPlayer = this.game.previousPlayer();
-    if (lastPlayer && lastPlayer.rack.isEmpty()) {
+    // If any player's rack is empty, offer "Acccept last move".
+    const finishedPlayer = this.game.getPlayerWithNoTiles();
+    if (finishedPlayer && finishedPlayer.key !== this.player.key) {
       this.lockBoard(true);
       if (this.player.key === this.game.whosTurnKey)
         this.setAction("action_confirmGameOver",

@@ -30,7 +30,7 @@ const Commands = superclass => class extends superclass {
 
     /* c8 ignore next 4 */
     if (this._debug) {
-      this._debug("Playing", stringify(move));
+      this._debug(`${player.name} is playing ${stringify(move)}`);
       this._debug(`Player's rack is ${player.rack.stringify()}`);
     }
 
@@ -381,7 +381,7 @@ const Commands = superclass => class extends superclass {
     assert(previousMove.type === Turn.Type.PLAYED,
            `Cannot challenge a ${previousMove.type}`);
     assert(challenged.key === previousMove.playerKey,
-           "Last player challenge mismatch");
+           `Last player challenge mismatch ${challenged.key}!=${previousMove.playerKey}`);
 
     return this.promiseDictionary()
     /* c8 ignore start */
