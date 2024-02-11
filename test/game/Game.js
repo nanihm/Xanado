@@ -481,7 +481,7 @@ describe("game/Game", () => {
       assert.equal(t1.replacements[0].score, 1);
       assert.equal(t1.replacements[1].letter, "Q");
       assert.equal(t1.replacements[1].score, 4);
-      console.log(game.pack());
+      //console.log(game.pack());
     });
   });
 });

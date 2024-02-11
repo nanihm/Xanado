@@ -76,7 +76,7 @@ describe("client/ClientGamesUI", () => {
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/session":  {
         promise: Promise.resolve(session),
-        count: 2
+        count: 3
       },
       "/sendReminder/*": Promise.resolve([ "anon", "anon@anon.gov.us" ]),
       "/signout": Promise.resolve(),
@@ -84,7 +84,10 @@ describe("client/ClientGamesUI", () => {
         promise: Platform.readFile(Platform.getFilePath("/i18n/index.json")),
         count: 2
       },
-      "/games/active": Promise.resolve([]),
+      "/games/active": {
+        promise: Promise.resolve([]),
+        count: 2
+      },
       "/history": Promise.resolve([]),
       "/css": Platform.readFile(Platform.getFilePath("/css/index.json")),
       "/oauth2-providers": Promise.resolve([{name: "A"}, {name:"B"}]),
@@ -125,12 +128,19 @@ describe("client/ClientGamesUI", () => {
     .then(() => server.wait());
   });
 
-  UNit("gameOptions", () => {
+  it("gameOptions", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/games/active": Promise.resolve([]),
+      "/dictionaries":
+      Platform.readFile(Platform.getFilePath("/dictionaries/index.json")),
+      "/editions": 
+      Platform.readFile(Platform.getFilePath("/editions/index.json")),
       "/locales": Platform.readFile(Platform.getFilePath("/i18n/index.json"))
     });
     const ui = new ClientGamesUI();
@@ -139,12 +149,15 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.gameOptions(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("joinGame", () => {
+  it("joinGame", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/games/active": Promise.resolve([]),
@@ -159,12 +172,15 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.joinGame(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("addRobot", () => {
+  it("addRobot", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/games/active": Promise.resolve([]),
@@ -178,12 +194,15 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.addRobot(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("invitePlayers", () => {
+  it("invitePlayers", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/games/active": Promise.resolve([]),
@@ -196,15 +215,21 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.invitePlayers(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("anotherGame", () => {
+  it("anotherGame", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
-      "/games/active": Promise.resolve([]),
+      "/games/active": {
+        promise: Promise.resolve([]),
+        count: 2
+      },
       "/anotherGame/unfinished_game": Promise.resolve(),
       "/locales": Platform.readFile(Platform.getFilePath("/i18n/index.json"))
     });
@@ -214,15 +239,21 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.anotherGame(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("deleteGame", () => {
+  it("deleteGame", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
-      "/games/active": Promise.resolve([]),
+      "/games/active": {
+        promise: Promise.resolve([]),
+        count: 2
+      },
       "/deleteGame/unfinished_game": Promise.resolve(),
       "/locales": Platform.readFile(Platform.getFilePath("/i18n/index.json"))
     });
@@ -232,12 +263,15 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.deleteGame(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("observe", () => {
+  it("observe", () => {
     const server = new StubServer({
-      "/session": { promise: Promise.resolve(session), count: 1 },
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 2
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/games/active": Promise.resolve([]),
@@ -249,23 +283,28 @@ describe("client/ClientGamesUI", () => {
     return ui.create()
     .then(() => getTestGame("unfinished_game", Game))
     .then(game => ui.observe(game))
-    .then(() => server.waUNit());
+    .then(() => server.wait());
   });
 
-  UNit("readyToListen", () => {
+  it("readyToListen", () => {
     const server = new StubServer({
-      "/session": Promise.resolve(session),
+      "/session":  {
+        promise: Promise.resolve(session),
+        count: 3
+      },
       "/defaults/user": Promise.resolve(USER_DEFAULTS),
       "/defaults/game": Promise.resolve(GAME_DEFAULTS),
       "/locales": Platform.readFile(Platform.getFilePath("/i18n/index.json")),
       "/history": Promise.resolve([]),
 
-      "/games/active": Promise.all([
-        getTestGame("unfinished_game", Game),
-        getTestGame("good_game", Game)
-      ])
-      .then(games => Promise.all(games.map(game => game.jsonable())))
-
+      "/games/active": {
+        promise: Promise.all([
+          getTestGame("unfinished_game", Game),
+          getTestGame("good_game", Game)
+        ])
+        .then(games => Promise.all(games.map(game => game.jsonable()))),
+        count: 2
+      }
     });
 
     $("body").append(`<table id="gamesList"><tbody></tbody></table>`);

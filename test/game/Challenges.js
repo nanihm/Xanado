@@ -3,7 +3,7 @@
 /* eslint-env mocha, node */
 
 import { assert } from "chai";
-import { setupPlatform } from "../TestPlatform.js";
+import { setupPlatform, UNit } from "../TestPlatform.js";
 import { MemoryDatabase } from "../MemoryDatabase.js";
 
 import { stringify } from "../../src/common/Utils.js";
@@ -1007,5 +1007,176 @@ describe("game/Challenges", () => {
     .then(() => game.play(john, move))
     .then(() => game.challenge(paul, john))
     .then(() => assert.equal(game.state, Game.State.PLAYING));
+  });
+
+  it("issue 120", () => {
+    const game = new Game({
+      edition:"Test",
+      dictionary:"Oxford_5000",
+      _noPlayerShuffle: true,
+      //_debug: console.debug,
+      challengePenalty: Game.Penalty.MISS
+    });
+
+    const joe = new Player({
+      name: "Joe", key: "joe", isRobot: false}, Game.CLASSES);
+    const john = new Player({
+      name: "John", key: "john", isRobot: false}, Game.CLASSES);
+    const paul = new Player({
+      name: "Paul", key: "paul", isRobot: false}, Game.CLASSES);
+
+    // Joe played (but still had tiles left) and Paul challenged and
+    // lost. Then John played and went out. At that point, Paul was
+    // the next player, but it would not let them accept.
+    // The problem is that Paul is the first player after the player
+    // that has gone out. The UI only looks at the last player to
+    // see if the game is over - it needs to look at ALL the players.
+
+    let connections = 0;
+    function waitConnections(resolve) {
+      if (connections === 9)
+        resolve();
+      else
+        setTimeout(() => waitConnections(resolve), 100);
+    }
+
+    const joes_sock = new TestSocket("Joe");
+    let joes_seq = 0;
+    joes_sock.on("*", (data, event, seqNo) => {
+      if (event == Game.Notify.CONNECTIONS) return;
+      switch (joes_seq++) {
+      case 0:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        assert.deepEqual(data.replacements, []);
+        break;
+      case 1:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.CHALLENGE_LOST);
+        break;
+      case 2:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        console.debug("JOE done",data.type);
+        joes_sock.done();
+        break;
+      default:
+        assert.fail(`UNEXPECTED John ${seqNo}, ${event}` + data);
+      }
+    });
+
+    const johns_sock = new TestSocket("John");
+    let johns_seq = 0;
+    johns_sock.on("*", (data, event, seqNo) => {
+      if (event == Game.Notify.CONNECTIONS) return;
+      switch (johns_seq++) {
+      case 0:
+        // There should be no replacements
+        // as the bag is empty
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        assert.deepEqual(data.replacements, []);
+        break;
+      case 1:
+        assert.equal(event, Game.Notify.TURN);
+        // Paul's challenge failed
+        assert.equal(data.type, Turn.Type.CHALLENGE_LOST);
+        break;
+      case 2:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        console.debug("JOHN done",data.type);
+        johns_sock.done();
+        break;
+      default:
+        assert.fail(`UNEXPECTED John ${seqNo}, ${event}` + data);
+      }
+    });
+
+    const pauls_sock = new TestSocket("Paul");
+    let pauls_seq = 0;
+    pauls_sock.on("*", (data, event, seqNo) => {
+      if (event == Game.Notify.CONNECTIONS) return;
+      switch (pauls_seq++) {
+      case 0:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        assert.deepEqual(data.replacements, []);
+        break;
+      case 1:
+        assert.equal(event, Game.Notify.TURN);
+        // Paul's challenge failed
+        assert.equal(data.type, Turn.Type.CHALLENGE_LOST);
+        break;
+      case 2:
+        assert.equal(event, Game.Notify.TURN);
+        assert.equal(data.type, Turn.Type.PLAYED);
+        console.debug("PAUL done", data.type);
+        pauls_sock.done();
+        break;
+      default:
+        assert.fail(`UNEXPECTED John ${seqNo}, ${event}` + data);
+      }
+    });
+
+    return game.create()
+    .then(() => game.onLoad(new MemoryDatabase()))
+    .then(game => {
+      game.addPlayer(joe);
+      joe.rack.addTile(game.letterBag.removeTile({letter:"J"}));
+      joe.rack.addTile(game.letterBag.removeTile({letter:"O"}));
+      joe.rack.addTile(game.letterBag.removeTile({letter:"Y"}));
+      joe.rack.addTile(game.letterBag.removeTile({letter:"S"}));
+
+      game.addPlayer(john);
+      john.rack.addTile(game.letterBag.removeTile({letter:"O"}));
+      john.rack.addTile(game.letterBag.removeTile({letter:"I"}));
+      john.rack.addTile(game.letterBag.removeTile({letter:"N"}));
+
+      game.addPlayer(paul);
+      paul.rack.addTile(game.letterBag.removeTile({letter:"P"}));
+      paul.rack.addTile(game.letterBag.removeTile({letter:"A"}));
+      paul.rack.addTile(game.letterBag.removeTile({letter:"W"}));
+      paul.rack.addTile(game.letterBag.removeTile({letter:"L"}));
+      game.whosTurnKey = john.key;
+
+      // Empty the bag
+      game.letterBag.getRandomTiles(
+        game.letterBag.remainingTileCount());
+    })
+    .then(() => game.connect(joes_sock, joe.key))
+    .then(() => game.connect(johns_sock, john.key))
+    .then(() => game.connect(pauls_sock, paul.key))
+
+    // Joe plays
+    .then(() => game.play(joe, new Move({
+      placements: [
+        new Tile({letter:"J", score:8, col: 0, row: 5}),
+        new Tile({letter:"O", score:1, col: 1, row: 5}),
+        new Tile({letter:"Y", score:4, col: 2, row: 5}),
+      ],
+      words: [ { word: "JOY", score: 10 } ],
+      score: 10
+    })))
+    // Paul challenges John
+    .then(() => game.challenge(paul, joe))
+    // challenge should fail, leaving Paul in "miss next turn"
+    .then(() => assert.equal(game.state, Game.State.PLAYING))
+    // John plays and empties their rack
+    .then(() => game.play(john, new Move({
+      placements: [
+        new Tile({letter:"O", isBlank:false, score:1, col: 0, row: 8}),
+        new Tile({letter:"I", isBlank:false, score:1, col: 0, row: 9}),
+        new Tile({letter:"N", isBlank:false, score:1, col: 0, row: 10})
+        ],
+        words: [ { word: "JOIN", score: 11 } ],
+        score: 11
+    })))
+    // John has played, Paul is next and should be able to Accept last move
+    .then(() => {
+      assert.equal(3, joes_seq);
+      assert.equal(3, johns_seq);
+      assert.equal(3, pauls_seq);
+    });
   });
 });

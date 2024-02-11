@@ -43,10 +43,11 @@ class UI {
    * @param {string?} title title for the error dialog
    * @return {jQuery} the dialog
    */
-  alert(args, title, log) {
+  alert(args, title = "", log) {
     // Alert used for user feedback if something goes wrong, debugger
     // is to make it easier to get a stack trace
     debugger;
+
     // The log parameter is used for unit tests
     log = (log || console.error);
 
@@ -63,16 +64,16 @@ class UI {
     let message;
     if (typeof(args) === "string") { // simple string
       message = $.i18n(args);
-      log("ALERT", message);
+      log("ALERT", title, message);
     } else if (args instanceof Error) { // Error object
       message = args.message;
-      log("ALERT", message, args.stack);
+      log("ALERT", title, message, args.stack);
     } else if (args instanceof Array) { // First element i18n code
       message = $.i18n.apply($.i18n, args);
-      log("ALERT", message);
+      log("ALERT", title, message);
     } else { // something else
       message = stringify(args);
-      log("ALERT", message);
+      log("ALERT", title, message);
     }
 
     return $("#alertDialog")

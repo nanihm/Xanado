@@ -28,7 +28,6 @@ class FileDatabase /* extends Database */ {
     this.directory = options.dir;
     this.ext = options.ext || ".db";
     this.re = new RegExp(`\\.${this.ext}$`);
-    this.locks = {};
   }
 
   /** See {@linkcode Database#keys|Database.keys} for documentation */

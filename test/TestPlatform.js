@@ -222,8 +222,8 @@ class StubServer {
         args.url = args.url.replace("file://", "");
       } else if (this.expected[args.url]) {
         if (this.expected[args.url].count-- <= 0) {
-          console.error(args);
-          assert.fail(`Unexpected ${args.url}`);
+          console.error("Unexpected: ", args);
+          assert.fail(`Unexpected ${args.url}, count is ${this.expected[args.url].count + 1}`);
         }
         //console.debug("Expected", args.url);
         //if (this.expected[args.url].count > 0)
