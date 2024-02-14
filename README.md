@@ -12,33 +12,13 @@ You can try it [here](https://cdot.github.io/Xanado/dist/standalone_games.html)!
 </p>
 
 * Has a single-player version which runs entirely in the browser, and a multi-player version which uses a host server.
-* You can play against a computer player, and/or other people.
+* You can play against a computer player, and/or against other people.
 * Play against the clock if you want to.
-* Supports different board layouts and tile sets, and makes it easy to define your own.
-- Includes tile sets for many languages, and dictionaries in English, French, German, and Catalan, and it's easy to add more.
-* Has several different dictionaries in a number of languages, and it's easy to add your own.
+* Supports several different board layouts, and you can even define your own.
+- Includes sets of tiles for many different languages, and it's easy to add more.
+* Has dictionaries in a number of languages, and it's straightforward to add your own.
 * Supports logins, which helps you to set up tournaments and record long-term player performance (server version only).
 * Players can use the dictionary to explore alternative moves (i.e. cheat).
-* It includes Scrabble tile sets for many different languages.
-
-## Background
-
-While there are a number of freely accessible servers out there
-offering clones of the classic SCRABBLE® game, I wanted a game I
-could host on my own server, and experiment with different
-dictionaries, board layouts, tile sets, and rule combinations. And I
-wanted it to be completely free. The public servers I found didn't
-work for me because:
-
-- Their code is not public, and setting up your own server is not an option.
-- They are generally limited to a single version of the game.
-- Their (English) dictionaries are usually based on the standard American Scrabble Tournament dictionary, which is stuffed full of obscure words that only a dedicated aficionado would know. This makes their robot games inaccessible for casual players, as a computer player will beat them every time.
-- They plague you with tedious advertisements and in-app purchases.
-
-Enter [Hans Hübner's html-scrabble](https://github.com/hanshuebner/html-scrabble), which this is a fork of.
-I started out working on their code but rapidly realised the scope and
-number of changes I intended required a fork, rather than bothering
-them with hundreds of pull requests.
 
 # Installation
 
@@ -214,6 +194,8 @@ dictionaries. Included with the installation are a number of pre-built dictionar
 - `DISC_Catalan` - 582236 Catalan words.
 
 See [DEVELOPING](DEVELOPING.md) for help on creating your own dictionary.
+
+To help in dictionary development there is a simple user interface that lets you explore anagrams and hangmen arrangements of letters in the various dictionaries. You can find it [here](https://cdot.github.io/Xanado/dist/solver.html).
 
 ## Whitelists
 Regenerating a dictionary can be time consuming, so dictionaries can

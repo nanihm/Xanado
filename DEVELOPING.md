@@ -1,3 +1,22 @@
+## Background
+
+While there are a number of freely accessible servers out there
+offering clones of the classic SCRABBLE® game, I wanted a game I
+could host on my own server, and experiment with different
+dictionaries, board layouts, tile sets, and rule combinations. And I
+wanted it to be completely free. The public servers I found didn't
+work for me because:
+
+- Their code is not public, and setting up your own server is not an option.
+- They are generally limited to a single version of the game.
+- Their (English) dictionaries are usually based on the standard American Scrabble Tournament dictionary, which is stuffed full of obscure words that only a dedicated aficionado would know. This makes their robot games inaccessible for casual players, as a computer player will beat them every time.
+- They plague you with tedious advertisements and in-app purchases.
+
+Enter [Hans Hübner's html-scrabble](https://github.com/hanshuebner/html-scrabble), which this is a fork of.
+I started out working on their code but rapidly realised the scope and
+number of changes I intended required a fork, rather than bothering
+them with hundreds of pull requests.
+
 ## Getting started
 You will need installations of `git` and a recent version of `node.js` to
 support development.
